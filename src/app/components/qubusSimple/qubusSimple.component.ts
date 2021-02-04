@@ -36,7 +36,7 @@ export class QubusSimpleComponent implements OnInit {
 
     this.camera.position.z = 5;
 
-    this.sceneService.setBackgroundColor(this.scene, 'magenta');
+    this.sceneService.setBackgroundColor(this.scene, 'grey');
     this.animate();
     window.addEventListener('resize', () => this.rendererService.resize(this.camera, this.renderer));
   }
