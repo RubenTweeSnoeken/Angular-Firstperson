@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
-
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 @Component({
     selector: 'app-windmill',
     templateUrl: './windmill.component.html',
