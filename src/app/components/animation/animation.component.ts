@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CameraService } from 'src/app/services/camera/camera.service';
+import { LightService } from 'src/app/services/light/light.service';
 import { MeshService } from 'src/app/services/mesh/mesh.service';
 import { RendererService } from 'src/app/services/renderer/renderer.service';
 import { SceneService } from 'src/app/services/scene/scene.service';
@@ -23,7 +24,8 @@ export class AnimationComponent implements OnInit {
     private cameraService: CameraService,
     private rendererService: RendererService,
     private meshService: MeshService,
-    private sceneService: SceneService) {
+    private sceneService: SceneService,
+    private lightService: LightService) {
   }
 
   public ngOnInit() {
@@ -37,6 +39,9 @@ export class AnimationComponent implements OnInit {
     this.sceneService.setBackgroundColor(this.scene, 'grey');
     this.animate();
     window.addEventListener('resize', () => this.rendererService.resize(this.camera, this.renderer));
+
+    let light = this.lightService.createAmbientLight("#FFFFFF", 0, 0, 0, 1000);
+    this.scene.add(light);
 
     const gltfLoader = new GLTFLoader();
     gltfLoader.load('assets/models/Flamingo.glb', (mesh) => {
