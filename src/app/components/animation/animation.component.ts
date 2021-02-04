@@ -47,7 +47,7 @@ export class AnimationComponent implements OnInit {
 
       // // Update the mixer on each frame
       function update () {
-         mixer.update( 1 ); // TODO: deltaSeconds
+         mixer.update( 11 ); // TODO: deltaSeconds (-> set value for diff animframe) 
       }
 
       const clip = THREE.AnimationClip.findByName( clips, 'flamingo_flyA_' );
@@ -55,18 +55,15 @@ export class AnimationComponent implements OnInit {
       action.play();
 
       // // Play all animations
-      // clips.forEach( function ( clip ) {
-      //   mixer.clipAction( clip ).play();
-      // } );
+      /* clips.forEach( function ( clip ) {
+           mixer.clipAction( clip ).play();
+         } );*/
       update();
     });
   }
 
   animate() { // TODO: to animationService
     requestAnimationFrame(() => this.animate());
-
-    //this.mesh.rotation.x += 0.04;
-    //this.mesh.rotation.y += 0.03;
 
     this.rendererService.render(this.scene, this.camera);
   };
