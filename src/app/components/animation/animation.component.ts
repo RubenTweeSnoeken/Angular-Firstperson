@@ -36,11 +36,9 @@ export class AnimationComponent implements OnInit {
     
     // Create basis scene
     this.scene = this.sceneService.createScene();
-    this.camera = this.cameraService.createCamera(0, -10, 0);
+    this.camera = this.cameraService.createCamera(0, -10, 150);
 
     this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
-
-    this.camera.position.z = 150;
 
     this.sceneService.setBackgroundColor(this.scene, 'grey');
     window.addEventListener('resize', () => this.rendererService.resize(this.camera, this.renderer));
