@@ -44,11 +44,9 @@ export class FirstpersonComponent implements OnInit {
     this.animate();
     document.body.appendChild(VRButton.createButton(this.renderer));
     this.renderer.xr.enabled = true;
-    let renderer = this.renderer;
-    let camera = this.camera;
-    let scene = this.scene;
-    this.renderer.setAnimationLoop(function () {
-      renderer.render(scene, camera);
+
+    this.renderer.setAnimationLoop(() => {
+      this.renderer.render(this.scene, this.camera);
     });
   }
 
@@ -64,12 +62,6 @@ export class FirstpersonComponent implements OnInit {
     });
     document.getElementById("fps").innerHTML = this.fps;
   }
-
-
-
-
-
-
 
   init() {
 
@@ -114,48 +106,41 @@ export class FirstpersonComponent implements OnInit {
   }
 
   keyStrokes() {
-    let controls = this.controls;
-    let moveForward = this.moveForward;
-    let moveBackward = this.moveBackward;
-    let moveLeft = this.moveLeft;
-    let moveRight = this.moveRight;
-    let canJump = this.canJump;
-    let keypress = this.keypress;
-    let velocity = this.velocity;
-    const onKeyDown = function (event) {
+
+    const onKeyDown = (event) => {
 
       switch (event.code) {
 
         case 'ArrowUp':
         case 'KeyW':
-          moveForward = true;
+          this.moveForward = true;
           break;
 
         case 'ArrowLeft':
         case 'KeyA':
-          moveLeft = true;
+          this.moveLeft = true;
           break;
 
         case 'ArrowDown':
         case 'KeyS':
-          moveBackward = true;
+          this.moveBackward = true;
           break;
 
         case 'ArrowRight':
         case 'KeyD':
-          moveRight = true;
+          this.moveRight = true;
           break;
 
         case 'Space':
-          if (canJump === true) velocity.y += 350;
-          canJump = false;
+          if (this.canJump === true) this.velocity.y += 350;
+          this.canJump = false;
           break;
         case 'KeyP':
-          if (keypress == false) {
-            controls.lock();
-            keypress = true;
+          if (this.keypress == false) {
+            this.controls.lock();
+            this.keypress = true;
           } else {
-            keypress = false;
+            this.keypress = false;
           }
           break;
       }
@@ -168,28 +153,29 @@ export class FirstpersonComponent implements OnInit {
 
         case 'ArrowUp':
         case 'KeyW':
-          moveForward = false;
+          this.moveForward = false;
           break;
 
         case 'ArrowLeft':
         case 'KeyA':
-          moveLeft = false;
+          this.moveLeft = false;
           break;
 
         case 'ArrowDown':
         case 'KeyS':
-          moveBackward = false;
+          this.moveBackward = false;
           break;
 
         case 'ArrowRight':
         case 'KeyD':
-          moveRight = false;
+          this.moveRight = false;
           break;
       }
     };
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
   }
+
 
   vertextDisplacemenet(position, scene, floorGeometry) {
 
