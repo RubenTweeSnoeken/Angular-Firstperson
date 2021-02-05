@@ -46,7 +46,7 @@ export class AnimationComponent implements OnInit {
     window.addEventListener('resize', () => this.rendererService.resize(this.camera, this.renderer));
 
     let light = this.lightService.createAmbientLight("#FFFFFF", 0, 0, 0, 1000);
-    this.scene.add(light);
+    this.sceneService.addObject(this.scene, light);
 
     // Load object
     const gltfLoader = new GLTFLoader();
@@ -69,7 +69,7 @@ export class AnimationComponent implements OnInit {
     const dt = this.clock.getDelta();
 
     if ( this.mixer ) this.mixer.update( dt );
-    
+
     requestAnimationFrame(() => this.animate());
 
     this.rendererService.render(this.scene, this.camera);
