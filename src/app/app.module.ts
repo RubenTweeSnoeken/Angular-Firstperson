@@ -7,6 +7,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { AppRoutingModule } from './app-routing.module';
 import { WindmillComponent } from './components/windmill/windmill.component';
 import { AnimationComponent } from './components/animation/animation.component';
+import { FirstpersonComponent } from './components/firstperson/firstperson.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { AnimationComponent } from './components/animation/animation.component';
     AnimationComponent,
     WindmillComponent,
     AnimationComponent,
+    FirstpersonComponent,
 
   ],
   imports: [
