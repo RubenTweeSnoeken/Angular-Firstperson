@@ -4,13 +4,15 @@ import { QubusSimpleComponent } from './components/qubusSimple/qubusSimple.compo
 import { RouterModule, Routes } from '@angular/router';
 import { WindmillComponent } from './components/windmill/windmill.component';
 import { AnimationComponent } from './components/animation/animation.component';
+import { FirstpersonComponent } from './components/firstperson/firstperson.component';
 
 
 
 const routes: Routes = [
   { path: 'qubusSimple', component: QubusSimpleComponent },
   { path: 'windmill', component: WindmillComponent },
-  { path: 'animation', component: AnimationComponent }
+  { path: 'animation', component: AnimationComponent },
+  { path: 'firstperson', component: FirstpersonComponent },
 
 ];
 
