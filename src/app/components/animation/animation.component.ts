@@ -32,10 +32,11 @@ export class AnimationComponent implements OnInit {
   }
 
   public ngOnInit() {
+    this.clock = new THREE.Clock();
+    
     // Create basis scene
     this.scene = this.sceneService.createScene();
     this.camera = this.cameraService.createCamera(0, -10, 0);
-    this.clock = new THREE.Clock();
 
     this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
 
@@ -62,7 +63,6 @@ export class AnimationComponent implements OnInit {
       
       this.animate();
     });
-
   }
 
   animate() { // TODO: to animationService
@@ -73,7 +73,5 @@ export class AnimationComponent implements OnInit {
     requestAnimationFrame( this.animate );
 
     this.rendererService.render(this.scene, this.camera);
-
-    //stats.update();
   }
 }
