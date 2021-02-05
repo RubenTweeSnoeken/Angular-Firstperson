@@ -157,7 +157,7 @@ export class WindmillComponent implements OnInit {
 
     drawObj() {
         const canvas = document.querySelector('#c');
-        this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        this.renderer //= new THREE.WebGLRenderer({ canvas, antialias: true });
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, - 1, 0), 0, 10);
 
         const fov = 45;
@@ -168,9 +168,9 @@ export class WindmillComponent implements OnInit {
         this.camera.position.set(0, 0, 20);
 
 
-        this.controls = new OrbitControls(this.camera, canvas);
-        this.controls.target.set(0, 5, 0);
-        this.controls.update();
+        // this.controls = new OrbitControls(this.camera, canvas);
+        // this.controls.target.set(0, 5, 0);
+        // this.controls.update();
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('blue');

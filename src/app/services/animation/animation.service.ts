@@ -24,7 +24,7 @@ export class AnimationService {
     const clip = THREE.AnimationClip.findByName(this.clips, clipName);
     let action = this.mixer.clipAction(clip);
     if (!loop)
-      action.setLoop(1, 1);
+      action.loop = THREE.LoopOnce;
     action.play();
   }
 

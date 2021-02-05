@@ -1,10 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import * as THREE from 'three';
 import { CameraService } from 'src/app/services/camera/camera.service';
 import { LightService } from 'src/app/services/light/light.service';
-import { MeshService } from 'src/app/services/mesh/mesh.service';
 import { RendererService } from 'src/app/services/renderer/renderer.service';
 import { SceneService } from 'src/app/services/scene/scene.service';
-import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 @Component({
@@ -20,57 +19,61 @@ export class AnimationComponent implements OnInit {
   public scene: THREE.Scene;
   public camera: THREE.Camera;
   public renderer: THREE.Renderer;
+  public clock: THREE.Clock;
+
+  // For animation
+  mixer: THREE.AnimationMixer;
+
   public constructor(
     private cameraService: CameraService,
     private rendererService: RendererService,
-    private meshService: MeshService,
     private sceneService: SceneService,
     private lightService: LightService) {
   }
 
   public ngOnInit() {
+    // Create basis scene
     this.scene = this.sceneService.createScene();
     this.camera = this.cameraService.createCamera(0, -10, 0);
+    this.clock = new THREE.Clock();
 
     this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
 
     this.camera.position.z = 150;
 
     this.sceneService.setBackgroundColor(this.scene, 'grey');
-    this.animate();
     window.addEventListener('resize', () => this.rendererService.resize(this.camera, this.renderer));
 
     let light = this.lightService.createAmbientLight("#FFFFFF", 0, 0, 0, 1000);
     this.scene.add(light);
 
+    // Load object
     const gltfLoader = new GLTFLoader();
     gltfLoader.load('assets/models/Flamingo.glb', (mesh) => {
       this.scene.add(mesh.scene);
 
-      const mixer = new THREE.AnimationMixer( mesh.scene );
+      // Animation stuff
+      this.mixer = new THREE.AnimationMixer( mesh.scene );
       const clips = mesh.animations;
 
-      // // Update the mixer on each frame
-      function update () {
-         mixer.update( 11 ); // TODO: deltaSeconds (-> set value for diff animframe) 
-      }
-
       const clip = THREE.AnimationClip.findByName( clips, 'flamingo_flyA_' );
-      const action = mixer.clipAction( clip );
-      action.play();
-
-      // // Play all animations
-      /* clips.forEach( function ( clip ) {
-           mixer.clipAction( clip ).play();
-         } );*/
-      update();
+      const action = this.mixer.clipAction( clip );
+      action.play();      
+      
+      this.animate();
     });
+
   }
 
   animate() { // TODO: to animationService
-    requestAnimationFrame(() => this.animate());
+    const dt = this.clock.getDelta();
+
+    if ( this.mixer ) this.mixer.update( dt );
+
+    requestAnimationFrame( this.animate );
 
     this.rendererService.render(this.scene, this.camera);
-  };
 
+    //stats.update();
+  }
 }
