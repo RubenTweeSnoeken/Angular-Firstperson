@@ -31,7 +31,7 @@ export class QubusSimpleComponent implements OnInit {
 
     this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
 
-    this.mesh = this.meshService.createMesh();
+    this.mesh = this.meshService.createMeshBox();
     this.sceneService.addObject(this.scene, this.mesh);
 
     this.camera.position.z = 5;

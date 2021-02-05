@@ -10,9 +10,9 @@ export class CameraService {
 
   constructor() { }
 
-  public createCamera(x: number, y: number, z: number) {
+  public createCamera(x: number, y: number, z: number, fov: number = 75, aspect: number = window.innerWidth / window.innerHeight, near: number = 0.1, far: number = 1000) {
     this.camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 0.1, 1000
+      fov, aspect, near, far
     );
     this.camera.position.x = x;
     this.camera.position.y = y;
