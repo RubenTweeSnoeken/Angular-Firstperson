@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import { Mesh, Object3D } from 'three';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnimationService {
   mixer: THREE.AnimationMixer = null;
-  clips: any; // TODO: type
+  clips: THREE.AnimationClip[];
 
   initMesh(mesh: any) {
     this.mixer = new THREE.AnimationMixer(mesh);
