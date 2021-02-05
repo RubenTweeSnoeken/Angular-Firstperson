@@ -68,9 +68,9 @@ export class AnimationComponent implements OnInit {
   animate() { // TODO: to animationService
     const dt = this.clock.getDelta();
 
-    if ( this.mixer ) this.mixer.update( dt );
+    requestAnimationFrame(() => this.animate());
 
-    requestAnimationFrame( this.animate );
+    if ( this.mixer ) this.mixer.update( dt );
 
     this.rendererService.render(this.scene, this.camera);
   }
