@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as THREE from 'three';
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+import WebXRPolyfill from 'webxr-polyfill';
 
 @Component({
   selector: 'app-firstperson',
@@ -39,6 +40,7 @@ export class FirstpersonComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const polyfill = new WebXRPolyfill();
     this.refreshLoop();
     this.init();
     this.animate();
