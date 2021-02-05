@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import { Mesh, Object3D } from 'three';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnimationService {
   mixer: THREE.AnimationMixer = null;
-  clips: any; // TODO: type
+  clips: THREE.AnimationClip[];
 
   initMesh(mesh: any) {
     this.mixer = new THREE.AnimationMixer(mesh);
@@ -24,7 +23,7 @@ export class AnimationService {
     const clip = THREE.AnimationClip.findByName(this.clips, clipName);
     let action = this.mixer.clipAction(clip);
     if (!loop)
-      action.setLoop(1, 1);
+      action.loop = THREE.LoopOnce;
     action.play();
   }
 

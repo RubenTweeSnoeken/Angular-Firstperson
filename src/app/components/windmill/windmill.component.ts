@@ -9,8 +9,6 @@ import { SceneService } from 'src/app/services/scene/scene.service';
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-
-
 @Component({
     selector: 'app-windmill',
     templateUrl: './windmill.component.html',
@@ -32,8 +30,6 @@ export class WindmillComponent implements OnInit {
         this.drawObj();
     }
 
-
-
     drawObj() {
         const canvas: HTMLCanvasElement = document.querySelector('#c');
         this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
@@ -49,7 +45,6 @@ export class WindmillComponent implements OnInit {
         this.scene.add(directLight);
         this.loaderService.createLoader(this.scene);
         requestAnimationFrame(() => this.render());
-
     }
 
     resizeRendererToDisplaySize(renderer) {
