@@ -8,6 +8,7 @@ import { FirstpersonComponent } from './components/firstperson/firstperson.compo
 import { ArImageComponent } from './components/ar-image-scan/ar-image-scan.component';
 import { ArMarkerComponent } from './components/ar-marker/ar-marker.component';
 import { ArLocationComponent } from './components/ar-location/ar-location.component';
+import { VirtualRealityComponent } from './components/virtual-reality/virtual-reality.component';
 
 
 
@@ -19,7 +20,7 @@ const routes: Routes = [
   { path: 'ar-image', component: ArImageComponent },
   { path: 'ar-location', component: ArLocationComponent },
   { path: 'ar-marker', component: ArMarkerComponent },
-
+  { path: 'vr-handtracking', component: VirtualRealityComponent },
 ];
 
 @NgModule({
