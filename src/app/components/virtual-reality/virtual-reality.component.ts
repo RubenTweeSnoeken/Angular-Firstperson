@@ -135,7 +135,7 @@ export class VirtualRealityComponent implements OnInit {
   //
 
   animate() {
-    this.renderer.setAnimationLoop( this.render );
+    this.renderer.setAnimationLoop( () => this.render() );
   }
 
   render() {
