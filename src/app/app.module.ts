@@ -12,6 +12,7 @@ import { ArImageComponent } from './components/ar-image-scan/ar-image-scan.compo
 import { ArMarkerComponent } from './components/ar-marker/ar-marker.component';
 import { ArLocationComponent } from './components/ar-location/ar-location.component';
 import { VirtualRealityComponent } from './components/virtual-reality/virtual-reality.component';
+import { ParticlesComponent } from './components/particles/particles.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { VirtualRealityComponent } from './components/virtual-reality/virtual-re
     ArMarkerComponent,
     ArLocationComponent,
     VirtualRealityComponent,
+    ParticlesComponent,
 
   ],
   imports: [
