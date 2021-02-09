@@ -7,262 +7,133 @@ import * as THREE from 'three';
   styleUrls: ['./particles.component.scss']
 })
 export class ParticlesComponent implements OnInit {
-
-  tau = Math.PI * 2;
-  width;
-  height;
-  mode;
-  scene; 
   camera;
-  renderer;
-  pointCloud;
+  scene; 
+  renderer; 
+  stats;
+  material;
+  mouseX = 0;
+  mouseY = 0;
 
-  THREE.ImageUtils.crossOrigin = '';
+	windowHalfX = window.innerWidth / 2;
+	windowHalfY = window.innerHeight / 2;
 
   constructor() { }
 
   ngOnInit(): void {
+    this.init();
+		this.animate();
   }
-    
-    SETTINGS = [{
-      name: 'Out of Control Spaceship',
-      particleCount: 100000,
-      material: new THREE.PointCloudMaterial({ 
-        size: 1, 
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.9
-      }),
-      initialize: null,
-      spawnBehavior: function(index){
-        var x, y, z;
-  
-        x = (Math.random() * 2000) - 1000;
-        y = (Math.random() * 2000) - 1000;
-        z = (Math.random() * 2000) - 1000;
-        return new THREE.Vector3(x, y, z);
-      },
-      frameBehavior: null,
-      sceneFrameBehavior: function(){
-        camera.rotation.x -= 0.002;
-        camera.rotation.y += 0.0085;
-        camera.rotation.z += 0.00425;
-        camera.translateZ(-1);
-      }
-    },{
-      name: 'Water Fountain',
-      particleCount: 500,
-      material: new THREE.PointCloudMaterial({
-        size: 3,
-        color: 0xccccff
-      }),
-      initialize: function(){
-        camera.position.y = 60;
-        camera.position.z = 200;
-      },
-      spawnBehavior: function(index){
-        var v = new THREE.Vector3(0,0,0);
-        var dX, dY, dZ;
-  
-        dY = (Math.random() * 20) + 10;
-        dX = (Math.random() * 4) - 2;
-        dZ = (Math.random() * 4) - 2;
-        v.velocity = new THREE.Vector3(dX, dY, dZ);
-  
-        return v;
-      },
-      frameBehavior: function(particle){
-        particle.x += particle.velocity.x;
-        particle.y += particle.velocity.y;
-        particle.z += particle.velocity.z;
-        
-        particle.velocity.y -= 0.5;
-        
-        if(particle.y < 0){
-          particle.x = particle.y = particle.z = 0;
-          var dX, dY, dZ;
-  
-          dY = (Math.random() * 4) + 10;
-          dX = (Math.random() * 4) - 2;
-          dZ = (Math.random() * 4) - 2;
-          particle.velocity = new THREE.Vector3(dX, dY, dZ);
-        }
-      }
-    },{
-      name: 'Sine, Cosine, Discosine',
-      particleCount: 400,
-      material: new THREE.PointCloudMaterial({
-        size: 10,
-        vertexColors: THREE.VertexColors
-      }),
-      initialize: function(){
-        camera.position.z = 50;      
-        camera.rotation.x = 45;
-      },
-      spawnBehavior: function(index){
-        var v;
-        var x, y;
-        var rows, cols, row, col;
-        var grid_width = 400,
-            cell_size;
-        
-        rows = cols = 20;
-        cell_size = grid_width / cols;
-        row = Math.floor(index / rows);
-        col = Math.floor(index % cols);
-        
-        x = (col * cell_size) - (grid_width / 2);
-        y = (row * cell_size) - (grid_width / 2);
-        
-        v = new THREE.Vector3(x, y, 0);
-        
-        return v;
-      },
-      frameBehavior: function(particle, index){
-        var grid_size = 20;
-        var row = Math.floor(index / grid_size);
-        var col = Math.floor(index % grid_size);
-        
-        var theta = tau * ((Date.now() % 1000) / 1000);
-        var x = tau * Math.cos(col / (grid_size - 1));
-        var y = tau * Math.sin(row / (grid_size - 1));
-        
-        var z = Math.sin((theta + x + y));
-        particle.z = 10 * z;
-        pointCloud.geometry.colors[index] = new THREE.Color().setHSL((z+1)/2, 1, 0.5);
-      },
-      sceneFrameBehavior: null
-    },{
-      name: 'Spooky Ghosts',
-      particleCount: 5000,
-      material: new THREE.PointCloudMaterial({
-        size: 16,
-        map: THREE.ImageUtils.loadTexture("http://matthewachase.com/tru-dat-boo.png"),
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        depthTest: false
-      }),
-      initialize: function(){
-        camera.position.y = 50;
-        camera.position.z = 200;
-        
-        pointCloud.sortParticles = true;
-      },
-      spawnBehavior: function(index){
-        var x, y, z;
-        var halfWidth = width / 2;
-        
-        x = (Math.random() * width) - halfWidth;
-        y = (Math.random() * width) - halfWidth;
-        z = (Math.random() * width) - halfWidth;
-        var v = new THREE.Vector3(x, y, z);
-        v.velocity = new THREE.Vector3(0,0,0);
-        
-        return v;
-      },
-      frameBehavior: function(particle, index){
-        function push(){
-          return (Math.random() * 0.125) - 0.0625;
-        }
-        
-        particle.add(particle.velocity);
-        particle.velocity.add(new THREE.Vector3(push(), push(), push()));
-        particle.velocity.add(new THREE.Vector3(particle.x, particle.y, particle.z).multiplyScalar(-0.00001));
-      },
-      sceneFrameBehavior: null
-    }];
-    
-    function onDocumentReady(){
-      initialize();
+
+  init() {
+    this.camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 2, 2000 );
+    this.camera.position.z = 1000;
+
+    this.scene = new THREE.Scene();
+    this.scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+
+    const sprite = new THREE.TextureLoader().load( '../../../assets/sprites/disc.png' );
+
+    for ( let i = 0; i < 10000; i ++ ) {
+
+      const x = 2000 * Math.random() - 1000;
+      const y = 2000 * Math.random() - 1000;
+      const z = 2000 * Math.random() - 1000;
+
+      vertices.push( x, y, z );
+
     }
-    
-    function addModeButtons(){
-      var buttons = document.getElementById('buttons');
-      _.forEach(SETTINGS, function(mode){
-        var button = document.createElement('button');
-        button.textContent = mode.name;
-        
-        button.addEventListener('click', function(){
-          setMode(mode);
-        });
-        buttons.appendChild(button);
-      });
-    }
-    
-    function initialize(){
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(120, width / height, 1, 1000);
-      renderer = new THREE.WebGLRenderer();
-      document.body.appendChild(renderer.domElement);
-      window.addEventListener('resize', onWindowResize);
-      onWindowResize();
-       
-      addModeButtons();
-      
-      scene.fog = new THREE.Fog(0, 1);
-      setMode(SETTINGS[SETTINGS.length-1]);
-      
-      AnimationController.registerAnimation(render);
-    }
-    
-    function setMode(_mode){
-      mode = _mode;
-      scene.remove(pointCloud);
-      resetCamera();
-      
-      var points = createPoints(mode.spawnBehavior);
-      var material = mode.material;
-      
-      pointCloud = new THREE.PointCloud(points, material);
-      
-      if(mode.initialize && typeof mode.initialize === 'function'){
-        mode.initialize();
-      }
-      scene.add(pointCloud);
-    }
-    
-    function createPoints(spawnBehavior){
-      var ret = new THREE.Geometry();
-      
-      _.times(mode.particleCount, function(index){
-        ret.vertices.push(spawnBehavior(index));
-      })
-      
-      return ret;
-    }
-    
-    function onWindowResize(){
-      width = window.innerWidth;
-      height = window.innerHeight;
-      updateRendererSize();
-    }
-    
-    function resetCamera(){
-      camera.position.x = camera.position.y = camera.position.z = camera.rotation.x = camera.rotation.y = camera.rotation.z = 0;
-    }
-    
-    function updateRendererSize(){
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-    }
-    
-    function updateParticles(){
-      if(mode.sceneFrameBehavior && typeof mode.sceneFrameBehavior === 'function'){
-        mode.sceneFrameBehavior();
-      }
-      if(mode.frameBehavior && typeof mode.frameBehavior === 'function'){
-        _.forEach(pointCloud.geometry.vertices, mode.frameBehavior);
-        pointCloud.geometry.verticesNeedUpdate = true;
-        pointCloud.geometry.colorsNeedUpdate = true;
-      }
-    }
-    
-    function render(){
-      updateParticles();
-      renderer.render(scene, camera);
-    }
-    
-    document.addEventListener('DOMContentLoaded', onDocumentReady);
-  })();
+
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+    this.material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: true, map: sprite, alphaTest: 0.5, transparent: true } );
+    this.material.color.setHSL( 1.0, 0.3, 0.7 );
+
+    const particles = new THREE.Points( geometry, this.material );
+    this.scene.add( particles );
+
+    //
+
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setPixelRatio( window.devicePixelRatio );
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( this.renderer.domElement );
+
+    //
+
+    //this.stats = new Stats();
+    //document.body.appendChild( stats.dom );
+
+    //
+
+    //const gui = new GUI();
+
+    //gui.add( material, 'sizeAttenuation' ).onChange( function () {
+
+      //material.needsUpdate = true;
+
+    //} );
+
+    //gui.open();
+
+    //
+
+    document.body.style.touchAction = 'none';
+    document.body.addEventListener( 'pointermove', this.onPointerMove );
+
+    //
+
+    window.addEventListener( 'resize', this.onWindowResize );
+
+  }
+
+  onWindowResize() {
+
+    this.windowHalfX = window.innerWidth / 2;
+    this.windowHalfY = window.innerHeight / 2;
+
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+  }
+
+  onPointerMove( event ) {
+
+    if ( event.isPrimary === false ) return;
+
+    this.mouseX = event.clientX - this.windowHalfX;
+    this.mouseY = event.clientY - this.windowHalfY;
+
+  }
+
+  //
+
+  animate() {
+
+    requestAnimationFrame( () => this.animate() );
+
+    this.render();
+    //stats.update();
+  }
+
+  render() {
+
+    const time = Date.now() * 0.00005;
+
+    this.camera.position.x += ( this.mouseX - this.camera.position.x ) * 0.05;
+    this.camera.position.y += ( - this.mouseY - this.camera.position.y ) * 0.05;
+
+    this.camera.lookAt( this.scene.position );
+
+    const h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
+    this.material.color.setHSL( h, 0.5, 0.5 );
+
+    this.renderer.render( this.scene, this.camera );
+
+  }
 }
