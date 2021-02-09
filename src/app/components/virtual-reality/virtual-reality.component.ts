@@ -34,6 +34,9 @@ export class VirtualRealityComponent implements OnInit {
   }
 
   init() {
+
+    // Scene initialization
+
     this.container = document.createElement( 'div' );
     document.body.appendChild( this.container );
 
@@ -66,7 +69,7 @@ export class VirtualRealityComponent implements OnInit {
     light.shadow.mapSize.set( 4096, 4096 );
     this.scene.add( light );
 
-    //
+    // Scene renderer init
 
     this.renderer = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -109,7 +112,7 @@ export class VirtualRealityComponent implements OnInit {
     this.hand2.add( handModelFactory.createHandModel( this.hand2 ) );
     this.scene.add( this.hand2 );
 
-    //
+    // Add pointing line to controllers
 
     const geometry = new THREE.BufferGeometry().setFromPoints( [ new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, - 1 ) ] );
 
