@@ -1,24 +1,50 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">
-      Three.js
-    </a>
-  
-    <button class="navbar-toggler" type="button"
-            (click)="toggleNavbar()">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
-  
-    <div class="collapse navbar-collapse"
-         [ngClass]="{ 'show': navbarOpen }">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/qubusSimple">qubus</a>
-        </li>
-  
-        <li class="nav-item">
-          <a class="nav-link" href="#">Item 2</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <a class="navbar-brand" href="#">
+    Three.js
+  </a>
+
+  <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+
+  <div class="collapse navbar-collapse" [ngClass]="{ 'show': navbarOpen }">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/qubusSimple">cubus</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/windmill">windmill</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/animation">animation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/firstperson">firstperson</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/ar-image">AR-image</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/ar-location">AR-location</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/ar-marker">AR-marker</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/vr-handtracking">VR-handtracking</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/particles">Particles</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/waterfountain">waterfountain</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/waterfountainColorFoul"> waterfountainColorFoul</a>
+      </li>
+    </ul>
+  </div>
+</nav>

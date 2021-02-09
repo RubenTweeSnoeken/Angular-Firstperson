@@ -28,12 +28,12 @@
     "bufferutil": "^4.0.3",
     "html-webpack-plugin": "^5.0.0",
     "jquery": "^3.5.1",
-    "node-sass": "^5.0.0",
     "popper.js": "^1.16.1",
     "rxjs": "~6.6.3",
-    "three": "^0.121.1",
+    "three": "^0.125.2",
     "tslib": "^2.0.0",
     "utf-8-validate": "^5.0.4",
+    "webxr-polyfill": "^2.0.3",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
