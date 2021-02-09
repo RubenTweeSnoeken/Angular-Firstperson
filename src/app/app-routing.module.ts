@@ -9,8 +9,9 @@ import { ArImageComponent } from './components/ar-image-scan/ar-image-scan.compo
 import { ArMarkerComponent } from './components/ar-marker/ar-marker.component';
 import { ArLocationComponent } from './components/ar-location/ar-location.component';
 import { VirtualRealityComponent } from './components/virtual-reality/virtual-reality.component';
-
-
+import { ParticlesComponent } from './components/particles/particles.component';
+import { WaterfountainComponent } from './components/waterfountain/waterfountain.component';
+import { Waterfountain2Component } from './components/waterfountain2/waterfountain2.component';
 
 const routes: Routes = [
   { path: 'qubusSimple', component: QubusSimpleComponent },
@@ -21,6 +22,10 @@ const routes: Routes = [
   { path: 'ar-location', component: ArLocationComponent },
   { path: 'ar-marker', component: ArMarkerComponent },
   { path: 'vr-handtracking', component: VirtualRealityComponent },
+  { path: 'particles', component: ParticlesComponent },
+  { path: 'waterfountain', component: WaterfountainComponent },
+  { path: 'waterfountainColorFoul', component: Waterfountain2Component },
+
 ];
 
 @NgModule({
