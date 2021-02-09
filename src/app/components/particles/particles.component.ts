@@ -40,7 +40,7 @@ export class ParticlesComponent implements OnInit {
 
     const sprite = new THREE.TextureLoader().load('../../../assets/sprites/disc.png');
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 100; i++) {
 
       const x = 2000 * Math.random() - 1000;
       const y = 2000 * Math.random() - 1000;
@@ -61,7 +61,7 @@ export class ParticlesComponent implements OnInit {
 
     this.canvas = document.querySelector("#C");
 
-    this.renderer = this.rendererService.createRender('#c',window.innerWidth, window.innerHeight );
+    this.renderer = this.rendererService.createRender('#c', window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     document.body.style.touchAction = 'none';
     document.body.addEventListener('pointermove', () => this.onPointerMove(event));
