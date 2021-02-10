@@ -40,7 +40,7 @@ export class FirstpersonComponent implements OnInit {
 
 
   ngOnInit(): void {
-    const polyfill = new WebXRPolyfill();
+    // const polyfill = new WebXRPolyfill();
     this.refreshLoop();
     this.init();
     this.animate();
@@ -149,7 +149,7 @@ export class FirstpersonComponent implements OnInit {
 
     };
 
-    const onKeyUp = function (event) {
+    const onKeyUp = (event) => {
 
       switch (event.code) {
 
@@ -248,9 +248,8 @@ export class FirstpersonComponent implements OnInit {
       this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
       this.direction.normalize(); // this ensures consistent movements in all directions
 
-      if (this.moveForward || this.moveBackward) this.velocity.z -= this.direction.z * 1000.0 * delta;
-      if (this.moveLeft || this.moveRight) this.velocity.x -= this.direction.x * 1000.0 * delta;
-
+      if (this.moveForward || this.moveBackward) { this.velocity.z -= this.direction.z * 1000.0 * delta; }
+      if (this.moveLeft || this.moveRight) { this.velocity.x -= this.direction.x * 1000.0 * delta; }
       if (onObject === true) {
 
         this.velocity.y = Math.max(0, this.velocity.y);
