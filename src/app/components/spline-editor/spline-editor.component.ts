@@ -169,7 +169,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   onPointerMove(event) {
-    
+
   }
 
   addSplineObject(position) {
@@ -198,12 +198,7 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(this.camera);
     this.scene.add(new THREE.AmbientLight(0xf0f0f0));
 
-    let floorGeometry = new THREE.PlaneGeometry(1000, 1000, 100, 100);
-    floorGeometry.rotateX(- Math.PI / 2);
 
-    // vertex displacement
-    let position = floorGeometry.attributes.position;
-    this.vertextDisplacemenet(position, this.scene, floorGeometry);
 
     const light = new THREE.SpotLight(0xffffff, 1.5);
     light.position.set(0, 1500, 200);
@@ -230,7 +225,7 @@ export class SplineEditorComponent implements OnInit {
     // helper.material.opacity = 0.25;
     // helper.material.transparent = true;
     // this.scene.add(helper);
- 
+
 
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -306,11 +301,24 @@ export class SplineEditorComponent implements OnInit {
     this.splines.chordal = curve;
 
     for (const k in this.splines) {
-
       const spline = this.splines[k];
       this.scene.add(spline.mesh);
-
     }
+
+    // ===================BEZIER TEST=====================
+    const curve1 = new THREE.CubicBezierCurve3(
+      new THREE.Vector3(-230, 50, 100),
+      new THREE.Vector3(-5, 15, 0),
+      new THREE.Vector3(20, 15, 0),
+      new THREE.Vector3(150, 0, -225)
+    );
+    const points = curve1.getPoints(50);
+    const geometry1 = new THREE.BufferGeometry().setFromPoints(points);
+    const material1 = new THREE.LineBasicMaterial({ color: 0x000000 });
+    // Create the final object to add to the scene
+    const curveObject = new THREE.Line(geometry1, material1);
+    this.scene.add(curveObject);
+    //====================================================
 
     this.load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
     new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
@@ -319,38 +327,6 @@ export class SplineEditorComponent implements OnInit {
 
   }
 
-  vertextDisplacemenet(position, scene, floorGeometry) {
 
-    for (let i = 0, l = position.count; i < l; i++) {
-
-      this.vertex.fromBufferAttribute(position, i);
-
-      this.vertex.x += Math.random() * 20 - 10;
-      this.vertex.y += Math.random() * 2;
-      this.vertex.z += Math.random() * 20 - 10;
-
-      position.setXYZ(i, this.vertex.x, this.vertex.y, this.vertex.z);
-    }
-
-    floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
-
-    position = floorGeometry.attributes.position;
-    const colorsFloor = [];
-
-    for (let i = 0, l = position.count; i < l; i++) {
-
-      this.color.setHSL(0xff0000, 1, Math.random() * 0.25 + 0.75);
-      colorsFloor.push(this.color.r, this.color.g, this.color.b);
-
-    }
-
-    floorGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsFloor, 1));
-
-    const floorMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
-
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    scene.add(floor);
-
-  }
 
 }
