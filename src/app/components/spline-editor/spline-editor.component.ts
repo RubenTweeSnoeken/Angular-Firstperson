@@ -96,17 +96,15 @@ export class SplineEditorComponent implements OnInit {
   }
 
   updateSplineOutline() {
-    for (const k in this.splines) {
-      const spline = this.splines[k];
-      const splineMesh = spline.mesh;
-      const position = splineMesh.geometry.attributes.position;
-      for (let i = 0; i < this.ARC_SEGMENTS; i++) {
-        const t = i / (this.ARC_SEGMENTS - 1);
-        spline.getPoint(t, this.point);
-        position.setXYZ(i, this.point.x, this.point.y, this.point.z);
-      }
-      position.needsUpdate = true;
+    const spline = this.splines.uniform;
+    const splineMesh = spline.mesh;
+    const position = splineMesh.geometry.attributes.position;
+    for (let i = 0; i < this.ARC_SEGMENTS; i++) {
+      const t = i / (this.ARC_SEGMENTS - 1);
+      spline.getPoint(t, this.point);
+      position.setXYZ(i, this.point.x, this.point.y, this.point.z);
     }
+    position.needsUpdate = true;
   }
 
   exportSpline() {
@@ -141,8 +139,6 @@ export class SplineEditorComponent implements OnInit {
 
   render() {
     this.splines.uniform.mesh.visible = this.params.uniform;
-    this.splines.centripetal.mesh.visible = this.params.centripetal;
-    this.splines.chordal.mesh.visible = this.params.chordal;
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -272,9 +268,9 @@ export class SplineEditorComponent implements OnInit {
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
-
-    let curve = new THREE.CatmullRomCurve3(this.positions);
-    curve.curveType = 'catmullrom';
+    console.log(this.positions);
+    let curve = new THREE.CubicBezierCurve3(this.positions[0],this.positions[1], this.positions[2],this.positions[3]
+    );
     curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
       color: 0xff0000,
       opacity: 0.35
@@ -282,42 +278,50 @@ export class SplineEditorComponent implements OnInit {
     curve.mesh.castShadow = true;
     this.splines.uniform = curve;
 
-    curve = new THREE.CatmullRomCurve3(this.positions);
-    curve.curveType = 'centripetal';
-    curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0x00ff00,
-      opacity: 0.35
-    }));
-    curve.mesh.castShadow = true;
-    this.splines.centripetal = curve;
+    // let curve = new THREE.CatmullRomCurve3(this.positions);
+    // curve.curveType = 'catmullrom';
+    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0xff0000,
+    //   opacity: 0.35
+    // }));
+    // curve.mesh.castShadow = true;
+    // this.splines.uniform = curve;
 
-    curve = new THREE.CatmullRomCurve3(this.positions);
-    curve.curveType = 'chordal';
-    curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-      color: 0x0000ff,
-      opacity: 0.35
-    }));
-    curve.mesh.castShadow = true;
-    this.splines.chordal = curve;
+    // curve = new THREE.CatmullRomCurve3(this.positions);
+    // curve.curveType = 'centripetal';
+    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0x00ff00,
+    //   opacity: 0.35
+    // }));
+    // curve.mesh.castShadow = true;
+    // this.splines.centripetal = curve;
 
-    for (const k in this.splines) {
-      const spline = this.splines[k];
-      this.scene.add(spline.mesh);
-    }
+    // curve = new THREE.CatmullRomCurve3(this.positions);
+    // curve.curveType = 'chordal';
+    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+    //   color: 0x0000ff,
+    //   opacity: 0.35
+    // }));
+    // curve.mesh.castShadow = true;
+    // this.splines.chordal = curve;
+
+    const spline = this.splines.uniform;
+    this.scene.add(spline.mesh);
+
 
     // ===================BEZIER TEST=====================
-    const curve1 = new THREE.CubicBezierCurve3(
-      new THREE.Vector3(-230, 50, 100),
-      new THREE.Vector3(-5, 15, 0),
-      new THREE.Vector3(20, 15, 0),
-      new THREE.Vector3(150, 0, -225)
-    );
-    const points = curve1.getPoints(50);
-    const geometry1 = new THREE.BufferGeometry().setFromPoints(points);
-    const material1 = new THREE.LineBasicMaterial({ color: 0x000000 });
-    // Create the final object to add to the scene
-    const curveObject = new THREE.Line(geometry1, material1);
-    this.scene.add(curveObject);
+    // const curve1 = new THREE.CubicBezierCurve3(
+    //   new THREE.Vector3(-230, 50, 100),
+    //   new THREE.Vector3(-5, 15, 0),
+    //   new THREE.Vector3(20, 15, 0),
+    //   new THREE.Vector3(150, 0, -225)
+    // );
+    // const points = curve1.getPoints(50);
+    // const geometry1 = new THREE.BufferGeometry().setFromPoints(points);
+    // const material1 = new THREE.LineBasicMaterial({ color: 0x000000 });
+    // // Create the final object to add to the scene
+    // const curveObject = new THREE.Line(geometry1, material1);
+    // this.scene.add(curveObject);
     //====================================================
 
     this.load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
