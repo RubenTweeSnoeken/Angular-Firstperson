@@ -33,7 +33,7 @@ export class SplineEditorComponent implements OnInit {
   onUpPosition = new THREE.Vector2();
   onDownPosition = new THREE.Vector2();
   canvas: HTMLCanvasElement;
-  geometry = new THREE.BoxGeometry(20, 20, 20);
+  geometry = new THREE.SphereGeometry(10, 10, 10);
   transformControl;
 
   ARC_SEGMENTS = 200;
@@ -132,7 +132,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   animate() {
-    requestAnimationFrame(this.animate);
+    requestAnimationFrame(() => this.animate());
     this.render();
     this.stats.update();
   }
@@ -169,7 +169,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   addSplineObject(position) {
-    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+    const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
     const object = new THREE.Mesh(this.geometry, material);
     if (position) {
       object.position.copy(position);
