@@ -147,15 +147,7 @@ export class SplineEditorComponent implements OnInit {
   onPointerDown(event) {
     this.onDownPosition.x = event.clientX;
     this.onDownPosition.y = event.clientY;
-  }
 
-  onPointerUp(event) {
-    this.onUpPosition.x = event.clientX;
-    this.onUpPosition.y = event.clientY;
-    if (this.onDownPosition.distanceTo(this.onUpPosition) === 0) this.transformControl.detach();
-  }
-
-  onPointerMove(event) {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.pointer, this.camera);
@@ -166,6 +158,16 @@ export class SplineEditorComponent implements OnInit {
         this.transformControl.attach(object);
       }
     }
+  }
+
+  onPointerUp(event) {
+    // this.onUpPosition.x = event.clientX;
+    // this.onUpPosition.y = event.clientY;
+    // if (this.onDownPosition.distanceTo(this.onUpPosition) === 0) this.transformControl.detach();
+  }
+
+  onPointerMove(event) {
+    
   }
 
   addSplineObject(position) {
