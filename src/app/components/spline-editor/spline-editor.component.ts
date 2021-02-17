@@ -20,7 +20,9 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 export class SplineEditorComponent implements OnInit {
   container;
   stats;
+  vertex = new THREE.Vector3();
   camera;
+  color = new THREE.Color();
   scene;
   renderer;
   splineHelperObjects = [];
@@ -195,6 +197,14 @@ export class SplineEditorComponent implements OnInit {
     this.camera.position.set(0, 250, 1000);
     this.scene.add(this.camera);
     this.scene.add(new THREE.AmbientLight(0xf0f0f0));
+
+    let floorGeometry = new THREE.PlaneGeometry(1000, 1000, 100, 100);
+    floorGeometry.rotateX(- Math.PI / 2);
+
+    // vertex displacement
+    let position = floorGeometry.attributes.position;
+    this.vertextDisplacemenet(position, this.scene, floorGeometry);
+
     const light = new THREE.SpotLight(0xffffff, 1.5);
     light.position.set(0, 1500, 200);
     light.angle = Math.PI * 0.2;
@@ -216,10 +226,12 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(plane);
 
     const helper = new THREE.GridHelper(2000, 100);
-    helper.position.y = - 199;
-    helper.material.opacity = 0.25;
-    helper.material.transparent = true;
-    this.scene.add(helper);
+    // helper.position.y = - 199;
+    // helper.material.opacity = 0.25;
+    // helper.material.transparent = true;
+    // this.scene.add(helper);
+ 
+
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -304,6 +316,40 @@ export class SplineEditorComponent implements OnInit {
     new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
     new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
     new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
+
+  }
+
+  vertextDisplacemenet(position, scene, floorGeometry) {
+
+    for (let i = 0, l = position.count; i < l; i++) {
+
+      this.vertex.fromBufferAttribute(position, i);
+
+      this.vertex.x += Math.random() * 20 - 10;
+      this.vertex.y += Math.random() * 2;
+      this.vertex.z += Math.random() * 20 - 10;
+
+      position.setXYZ(i, this.vertex.x, this.vertex.y, this.vertex.z);
+    }
+
+    floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
+
+    position = floorGeometry.attributes.position;
+    const colorsFloor = [];
+
+    for (let i = 0, l = position.count; i < l; i++) {
+
+      this.color.setHSL(0xff0000, 1, Math.random() * 0.25 + 0.75);
+      colorsFloor.push(this.color.r, this.color.g, this.color.b);
+
+    }
+
+    floorGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsFloor, 1));
+
+    const floorMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
+
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    scene.add(floor);
 
   }
 
