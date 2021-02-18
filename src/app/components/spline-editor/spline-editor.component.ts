@@ -258,15 +258,7 @@ export class SplineEditorComponent implements OnInit {
     return object;
   }
 
-  //init the whole project
-  init() {
-    this.container = document.getElementById('container');
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf0f0f0);
-    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
-    this.camera.position.set(0, 250, 1000);
-    this.scene.add(this.camera);
-    this.scene.add(new THREE.AmbientLight(0xf0f0f0));
+  createLight() {
     const light = new THREE.SpotLight(0xffffff, 1.5);
     light.position.set(0, 1500, 200);
     light.angle = Math.PI * 0.2;
@@ -277,65 +269,62 @@ export class SplineEditorComponent implements OnInit {
     light.shadow.mapSize.width = 1024;
     light.shadow.mapSize.height = 1024;
     this.scene.add(light);
+  }
 
+  //init the whole project
+  init() {
+    this.container = document.getElementById('container');
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xf0f0f0);
+    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+    this.camera.position.set(0, 250, 1000);
+    this.scene.add(this.camera);
+    this.scene.add(new THREE.AmbientLight(0xf0f0f0));
+    this.createLight();
     const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
     planeGeometry.rotateX(- Math.PI / 2);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.2 });
-
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
     plane.position.y = - 200;
     plane.receiveShadow = true;
     this.scene.add(plane);
-
     const helper = new THREE.GridHelper(2000, 100);
     helper.position.y = - 199;
     helper.material.opacity = 0.25;
     helper.material.transparent = true;
     this.scene.add(helper);
-
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
     this.container.appendChild(this.renderer.domElement);
-
     this.stats = new Stats();
     container.appendChild(this.stats.dom);
-
     const gui = new GUI();
     gui.add(this.params, 'addPoint');
     gui.add(this.params, 'removePoint');
     gui.add(this.params, 'exportSpline');
     gui.open();
-
     // Controls
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.damping = 0.2;
     controls.addEventListener('change', () => this.render());
-
     this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
     this.transformControl.addEventListener('change', () => this.render());
     this.transformControl.addEventListener('dragging-changed', function (event) {
-
       controls.enabled = !event.value;
-
     });
     this.scene.add(this.transformControl);
 
     this.transformControl.addEventListener('objectChange', () => {
       this.updateSplineOutline();
     });
-
     document.addEventListener('pointerdown', () => this.onPointerDown(event));
-
-
     /*******
      * Curves
      *********/
     this.createBeginPointsAndLine();
-
   }
-
   createBeginPointsAndLine() {
     for (let i = 0; i < this.splinePointsLength; i++) {
       this.addSplineObject(this.positions[i]);
