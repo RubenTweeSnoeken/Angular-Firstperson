@@ -51,9 +51,9 @@ export class SplineEditorComponent implements OnInit {
     tension: 0.5,
     centripetal: true,
     chordal: true,
-    addPoint: this.addPoint,
-    removePoint: this.removePoint,
-    exportSpline: this.exportSpline
+    addPoint: () => this.addPoint(),
+    removePoint: () => this.removePoint(),
+    exportSpline: () => this.exportSpline()
   };
 
   constructor(private cameraService: CameraService,
@@ -61,6 +61,7 @@ export class SplineEditorComponent implements OnInit {
     private meshService: MeshService,
     private sceneService: SceneService) { }
 
+  //draw curve with canvas methode
   drawCruves() {
     this.canvas = document.querySelector("#canvas");
     var ctx = this.canvas.getContext('2d');
@@ -78,11 +79,15 @@ export class SplineEditorComponent implements OnInit {
     this.animate();
   }
 
+  //add point to the filed
   addPoint() {
     this.splinePointsLength++;
-    this.positions.push(this.addSplineObject(this.positions).position);
+    let obj = this.addSplineObject().position;
+    this.positions.push(obj);
     this.updateSplineOutline();
   }
+
+  //remove point from the field
   removePoint() {
     if (this.splinePointsLength <= 4) {
       return;
@@ -95,6 +100,7 @@ export class SplineEditorComponent implements OnInit {
     this.updateSplineOutline();
   }
 
+  //update the line drawing
   updateSplineOutline() {
     const spline = this.splines.uniform;
     const splineMesh = spline.mesh;
@@ -107,6 +113,7 @@ export class SplineEditorComponent implements OnInit {
     position.needsUpdate = true;
   }
 
+  //export spline with code
   exportSpline() {
     const strplace = [];
     for (let i = 0; i < this.splinePointsLength; i++) {
@@ -118,6 +125,7 @@ export class SplineEditorComponent implements OnInit {
     prompt('copy and paste code', code);
   }
 
+  //add points
   load(new_positions) {
     while (new_positions.length > this.positions.length) {
       this.addPoint();
@@ -131,17 +139,20 @@ export class SplineEditorComponent implements OnInit {
     this.updateSplineOutline();
   }
 
+  //animate the 
   animate() {
     requestAnimationFrame(() => this.animate());
     this.render();
     this.stats.update();
   }
 
+  //render the view
   render() {
     this.splines.uniform.mesh.visible = this.params.uniform;
     this.renderer.render(this.scene, this.camera);
   }
 
+  //when clicking on the point
   onPointerDown(event) {
     this.onDownPosition.x = event.clientX;
     this.onDownPosition.y = event.clientY;
@@ -168,7 +179,8 @@ export class SplineEditorComponent implements OnInit {
 
   }
 
-  addSplineObject(position) {
+  //add new bullt point
+  addSplineObject(position?) {
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
     const object = new THREE.Mesh(this.geometry, material);
     if (position) {
@@ -185,6 +197,7 @@ export class SplineEditorComponent implements OnInit {
     return object;
   }
 
+  //init the whole project
   init() {
     this.container = document.getElementById('container');
     this.scene = new THREE.Scene();
@@ -217,12 +230,10 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(plane);
 
     const helper = new THREE.GridHelper(2000, 100);
-    // helper.position.y = - 199;
-    // helper.material.opacity = 0.25;
-    // helper.material.transparent = true;
-    // this.scene.add(helper);
-
-
+    helper.position.y = - 199;
+    helper.material.opacity = 0.25;
+    helper.material.transparent = true;
+    this.scene.add(helper);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -230,7 +241,26 @@ export class SplineEditorComponent implements OnInit {
     this.renderer.shadowMap.enabled = true;
     this.container.appendChild(this.renderer.domElement);
 
-    this.stats = Stats();
+    this.stats = new Stats();
+    container.appendChild(this.stats.dom);
+
+    const gui = new GUI();
+
+
+    gui.add(this.params, 'uniform');
+    gui.add(this.params, 'tension', 0, 1).step(0.01).onChange((value) => {
+
+      this.splines.uniform.tension = value;
+      this.updateSplineOutline();
+
+    });
+    gui.add(this.params, 'centripetal');
+    gui.add(this.params, 'chordal');
+    gui.add(this.params, 'addPoint');
+    gui.add(this.params, 'removePoint');
+    gui.add(this.params, 'exportSpline');
+    gui.open();
+
     // Controls
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.damping = 0.2;
@@ -266,10 +296,11 @@ export class SplineEditorComponent implements OnInit {
       this.positions.push(this.splineHelperObjects[i].position);
     }
 
+
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
-    console.log(this.positions);
-    let curve = new THREE.CubicBezierCurve3(this.positions[0],this.positions[1], this.positions[2],this.positions[3]
+
+    let curve = new THREE.CubicBezierCurve3(this.positions[0], this.positions[1], this.positions[2], this.positions[3]
     );
     curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
       color: 0xff0000,
@@ -278,56 +309,17 @@ export class SplineEditorComponent implements OnInit {
     curve.mesh.castShadow = true;
     this.splines.uniform = curve;
 
-    // let curve = new THREE.CatmullRomCurve3(this.positions);
-    // curve.curveType = 'catmullrom';
-    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0xff0000,
-    //   opacity: 0.35
-    // }));
-    // curve.mesh.castShadow = true;
-    // this.splines.uniform = curve;
-
-    // curve = new THREE.CatmullRomCurve3(this.positions);
-    // curve.curveType = 'centripetal';
-    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0x00ff00,
-    //   opacity: 0.35
-    // }));
-    // curve.mesh.castShadow = true;
-    // this.splines.centripetal = curve;
-
-    // curve = new THREE.CatmullRomCurve3(this.positions);
-    // curve.curveType = 'chordal';
-    // curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
-    //   color: 0x0000ff,
-    //   opacity: 0.35
-    // }));
-    // curve.mesh.castShadow = true;
-    // this.splines.chordal = curve;
-
     const spline = this.splines.uniform;
     this.scene.add(spline.mesh);
 
 
-    // ===================BEZIER TEST=====================
-    // const curve1 = new THREE.CubicBezierCurve3(
-    //   new THREE.Vector3(-230, 50, 100),
-    //   new THREE.Vector3(-5, 15, 0),
-    //   new THREE.Vector3(20, 15, 0),
-    //   new THREE.Vector3(150, 0, -225)
-    // );
-    // const points = curve1.getPoints(50);
-    // const geometry1 = new THREE.BufferGeometry().setFromPoints(points);
-    // const material1 = new THREE.LineBasicMaterial({ color: 0x000000 });
-    // // Create the final object to add to the scene
-    // const curveObject = new THREE.Line(geometry1, material1);
-    // this.scene.add(curveObject);
-    //====================================================
+
 
     this.load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
     new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
     new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
     new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
+
 
   }
 
