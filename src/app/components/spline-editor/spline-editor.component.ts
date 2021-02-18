@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { Component, OnInit } from '@angular/core';
 import { CameraService } from 'src/app/services/camera/camera.service';
 import { MeshService } from 'src/app/services/mesh/mesh.service';
@@ -10,6 +9,7 @@ import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { Vector3 } from 'three';
 
 
 @Component({
@@ -26,7 +26,7 @@ export class SplineEditorComponent implements OnInit {
   scene;
   renderer;
   splineHelperObjects = [];
-  splinePointsLength = 4;
+  splinePointsLength = 8;
   positions = [];
   point = new THREE.Vector3();
 
@@ -40,11 +40,8 @@ export class SplineEditorComponent implements OnInit {
 
   ARC_SEGMENTS = 200;
 
-  splines = {
-    uniform: null,
-    chordal: null,
-    centripetal: null
-  };
+  splines = [];
+
 
   params = {
     uniform: true,
@@ -52,7 +49,7 @@ export class SplineEditorComponent implements OnInit {
     centripetal: true,
     chordal: true,
     addPoint: () => this.addPoint(),
-    removePoint: () => this.removePoint(),
+    removePoint: () => this.removePoint(true),
     exportSpline: () => this.exportSpline()
   };
 
@@ -84,11 +81,75 @@ export class SplineEditorComponent implements OnInit {
     this.splinePointsLength++;
     let obj = this.addSplineObject().position;
     this.positions.push(obj);
+    this.addBezierCurveLine();
     this.updateSplineOutline();
   }
 
+
+  addBezierCurveLine() {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
+    let EvenNumber = this.number_test((this.positions.length / 4));
+    // if (EvenNumber) {
+    let divided = this.positions.length / 4;
+    let lastDigit = divided.toString().slice(-2);
+    console.log({ lastDigit });
+    if (lastDigit === "25" || EvenNumber === false) {
+      let curve = new THREE.CubicBezierCurve3(this.positions[this.positions.length - 2], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1]
+      );
+      curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+        color: 0xff0000,
+        opacity: 0.35,
+      }));
+      curve.mesh.name = (this.splines.length + 1).toString() + "_mesh";
+      curve.mesh.castShadow = true;
+      this.splines.push(curve);
+      this.scene.add(curve.mesh);
+    } else if (lastDigit === ".5") {
+      let spline = this.splines[this.splines.length - 1];
+      spline.v2 = this.positions[this.positions.length - 1];
+      spline.v3 = this.positions[this.positions.length - 1];
+    } else if (lastDigit === "75") {
+      let spline = this.splines[this.splines.length - 1];
+      spline.v3 = this.positions[this.positions.length - 1];
+    }
+    console.log(this.scene);
+
+  }
+
+  removeBezierCurveLine() {
+    let EvenNumber = this.number_test((this.positions.length / 4));
+    let divided = this.positions.length / 4;
+    let lastDigit = divided.toString().slice(-2);
+    console.log({ EvenNumber }, { divided }, { lastDigit });
+    if (EvenNumber === false || lastDigit == "75") {
+      let spline = this.splines[this.splines.length - 1];
+      if (spline.v1 == spline.v2) {
+        console.log(this.splines.length.toString() + "_mesh")
+        let selectedObject = this.scene.getObjectByName(this.splines.length.toString() + "_mesh");
+        console.log(selectedObject);
+        this.scene.remove(selectedObject);
+        this.splines.pop();
+      }
+      console.log(spline);
+    } else if (lastDigit === "25") {
+      let spline = this.splines[this.splines.length - 1];
+      spline.v2 = spline.v1;
+      spline.v2 = spline.v1;
+      spline.v3 = spline.v1;
+    } else if (lastDigit == ".5") {
+      let spline = this.splines[this.splines.length - 1];
+      spline.v3 = spline.v2;
+    }
+  }
+
+  number_test(n) {
+    let result = (n - Math.floor(n)) !== 0;
+    return result;
+  }
+
   //remove point from the field
-  removePoint() {
+  removePoint(remove?: boolean) {
     if (this.splinePointsLength <= 4) {
       return;
     }
@@ -97,20 +158,26 @@ export class SplineEditorComponent implements OnInit {
     this.positions.pop();
     if (this.transformControl.object === point) this.transformControl.detach();
     this.scene.remove(point);
+    if (remove) {
+      this.removeBezierCurveLine();
+    }
     this.updateSplineOutline();
   }
 
   //update the line drawing
   updateSplineOutline() {
-    const spline = this.splines.uniform;
-    const splineMesh = spline.mesh;
-    const position = splineMesh.geometry.attributes.position;
-    for (let i = 0; i < this.ARC_SEGMENTS; i++) {
-      const t = i / (this.ARC_SEGMENTS - 1);
-      spline.getPoint(t, this.point);
-      position.setXYZ(i, this.point.x, this.point.y, this.point.z);
+    for (const k in this.splines) {
+      const spline = this.splines[k];
+      const splineMesh = spline.mesh;
+      const position = splineMesh.geometry.attributes.position;
+      for (let i = 0; i < this.ARC_SEGMENTS; i++) {
+        const t = i / (this.ARC_SEGMENTS - 1);
+        spline.getPoint(t, this.point);
+        position.setXYZ(i, this.point.x, this.point.y, this.point.z);
+      }
+      position.needsUpdate = true;
     }
-    position.needsUpdate = true;
+    this.render();
   }
 
   //export spline with code
@@ -148,7 +215,10 @@ export class SplineEditorComponent implements OnInit {
 
   //render the view
   render() {
-    this.splines.uniform.mesh.visible = this.params.uniform;
+    for (const k in this.splines) {
+
+      this.splines[k].mesh.visible = this.params.uniform;
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -245,17 +315,6 @@ export class SplineEditorComponent implements OnInit {
     container.appendChild(this.stats.dom);
 
     const gui = new GUI();
-
-
-    gui.add(this.params, 'uniform');
-    gui.add(this.params, 'tension', 0, 1).step(0.01).onChange((value) => {
-
-      this.splines.uniform.tension = value;
-      this.updateSplineOutline();
-
-    });
-    gui.add(this.params, 'centripetal');
-    gui.add(this.params, 'chordal');
     gui.add(this.params, 'addPoint');
     gui.add(this.params, 'removePoint');
     gui.add(this.params, 'exportSpline');
@@ -286,7 +345,11 @@ export class SplineEditorComponent implements OnInit {
     /*******
      * Curves
      *********/
+    this.createBeginPointsAndLine();
 
+  }
+
+  createBeginPointsAndLine() {
     for (let i = 0; i < this.splinePointsLength; i++) {
       this.addSplineObject(this.positions[i]);
     }
@@ -307,22 +370,18 @@ export class SplineEditorComponent implements OnInit {
       opacity: 0.35
     }));
     curve.mesh.castShadow = true;
-    this.splines.uniform = curve;
-
-    const spline = this.splines.uniform;
-    this.scene.add(spline.mesh);
-
+    this.splines.push(curve);
+    const spline = this.splines;
+    this.scene.add(spline[0].mesh);
 
 
 
-    this.load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-    new THREE.Vector3(- 53.56300074753207, 171.49711742836848, - 14.495472686253045),
-    new THREE.Vector3(- 91.40118730204415, 176.4306956436485, - 6.958271935582161),
-    new THREE.Vector3(- 383.785318791128, 491.1365363371675, 47.869296953772746)]);
-
-
+    this.load(
+      [
+        new THREE.Vector3(389.76843686945404, 552.51481137238443, 156.10018915737797),
+        new THREE.Vector3(- 153.56300074753207, 271.49711742836848, - 114.495472686253045),
+        new THREE.Vector3(- 191.40118730204415, 276.4306956436485, - 106.958271935582161),
+        new THREE.Vector3(- 483.785318791128, 591.1365363371675, 147.869296953772746),
+      ]);
   }
-
-
-
 }
