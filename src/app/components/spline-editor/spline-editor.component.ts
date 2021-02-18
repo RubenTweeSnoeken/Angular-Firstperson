@@ -93,9 +93,9 @@ export class SplineEditorComponent implements OnInit {
     // if (EvenNumber) {
     let divided = this.positions.length / 4;
     let lastDigit = divided.toString().slice(-2);
-    console.log({ lastDigit });
-    if (lastDigit === "25" || EvenNumber === false) {
-      let curve = new THREE.CubicBezierCurve3(this.positions[this.positions.length - 2], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1]
+    console.log({ EvenNumber }, { divided }, { lastDigit }, { length: this.positions.length });
+    if (divided == 0.25 && divided < 1) {
+      let curve = new THREE.CubicBezierCurve3(this.positions[this.positions.length - 1], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1]
       );
       curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
         color: 0xff0000,
@@ -105,42 +105,101 @@ export class SplineEditorComponent implements OnInit {
       curve.mesh.castShadow = true;
       this.splines.push(curve);
       this.scene.add(curve.mesh);
-    } else if (lastDigit === ".5") {
+    } else if (divided == 0.50 && divided < 1) {
+      let spline = this.splines[this.splines.length - 1];
+      spline.v1 = this.positions[this.positions.length - 1];
+      spline.v2 = this.positions[this.positions.length - 1];
+      spline.v3 = this.positions[this.positions.length - 1];
+    } else if (divided == 0.75 && divided < 1) {
       let spline = this.splines[this.splines.length - 1];
       spline.v2 = this.positions[this.positions.length - 1];
       spline.v3 = this.positions[this.positions.length - 1];
-    } else if (lastDigit === "75") {
+    }
+    else if (divided == 1) {
       let spline = this.splines[this.splines.length - 1];
       spline.v3 = this.positions[this.positions.length - 1];
+    } else {
+      let spline = this.splines[this.splines.length - 1];
+      if (spline.v3 == spline.v2 && spline.v2 == spline.v1) {
+        let spline = this.splines[this.splines.length - 1];
+        spline.v2 = this.positions[this.positions.length - 1];
+        spline.v3 = this.positions[this.positions.length - 1];
+      } else if (spline.v3 == spline.v2) {
+        let spline = this.splines[this.splines.length - 1];
+        spline.v3 = this.positions[this.positions.length - 1];
+      } else {
+        let curve = new THREE.CubicBezierCurve3(this.positions[this.positions.length - 2], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1], this.positions[this.positions.length - 1]
+        );
+        curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
+          color: 0xff0000,
+          opacity: 0.35,
+        }));
+        curve.mesh.name = (this.splines.length + 1).toString() + "_mesh";
+        curve.mesh.castShadow = true;
+        this.splines.push(curve);
+        this.scene.add(curve.mesh);
+      }
     }
-    console.log(this.scene);
-
   }
 
   removeBezierCurveLine() {
     let EvenNumber = this.number_test((this.positions.length / 4));
     let divided = this.positions.length / 4;
     let lastDigit = divided.toString().slice(-2);
-    console.log({ EvenNumber }, { divided }, { lastDigit });
-    if (EvenNumber === false || lastDigit == "75") {
-      let spline = this.splines[this.splines.length - 1];
-      if (spline.v1 == spline.v2) {
-        console.log(this.splines.length.toString() + "_mesh")
+    console.log({ EvenNumber }, { divided }, { lastDigit }, { length: this.positions.length });
+    if (divided <= 1) {
+      if (lastDigit == "1") {
+        let spline = this.splines[this.splines.length - 1];
+        spline.v3 = spline.v2;
+      } else if (lastDigit == "75") {
+        let spline = this.splines[this.splines.length - 1];
+        spline.v2 = spline.v1;
+        spline.v2 = spline.v1;
+        spline.v3 = spline.v1;
+      } else if (lastDigit == ".5") {
+        let spline = this.splines[this.splines.length - 1];
+        spline.v1 = spline.v0;
+        spline.v2 = spline.v0;
+        spline.v3 = spline.v0;
+      } else if (lastDigit == "25") {
+        let spline = this.splines[this.splines.length - 1];
         let selectedObject = this.scene.getObjectByName(this.splines.length.toString() + "_mesh");
-        console.log(selectedObject);
         this.scene.remove(selectedObject);
         this.splines.pop();
       }
-      console.log(spline);
-    } else if (lastDigit === "25") {
-      let spline = this.splines[this.splines.length - 1];
-      spline.v2 = spline.v1;
-      spline.v2 = spline.v1;
-      spline.v3 = spline.v1;
-    } else if (lastDigit == ".5") {
-      let spline = this.splines[this.splines.length - 1];
-      spline.v3 = spline.v2;
     }
+    else {
+      let spline = this.splines[this.splines.length - 1];
+      if (spline.v3 != spline.v2 && spline.v2 != spline.v1) {
+        spline.v3 = spline.v2;
+      } else if (spline.v3 == spline.v2 && spline.v2 != spline.v1) {
+        spline.v3 = spline.v1;
+        spline.v2 = spline.v1;
+      } else if (spline.v3 == spline.v2 && spline.v2 == spline.v1) {
+        let spline = this.splines[this.splines.length - 1];
+        let selectedObject = this.scene.getObjectByName(this.splines.length.toString() + "_mesh");
+        this.scene.remove(selectedObject);
+        this.splines.pop();
+      }
+    }
+
+
+
+    // else {
+    //   if (EvenNumber === false || lastDigit == "25") {
+    //     let spline = this.splines[this.splines.length - 1];
+    //     let selectedObject = this.scene.getObjectByName(this.splines.length.toString() + "_mesh");
+    //     this.scene.remove(selectedObject);
+    //     this.splines.pop();
+    //   } else if (lastDigit === "75") {
+    //     let spline = this.splines[this.splines.length - 1];
+    //     spline.v3 = spline.v2;
+    //   } else if (lastDigit == ".5") {
+    //     let spline = this.splines[this.splines.length - 1];
+    //     spline.v3 = spline.v1;
+    //     spline.v2 = spline.v1;
+    //   }
+    // }
   }
 
   number_test(n) {
@@ -150,17 +209,18 @@ export class SplineEditorComponent implements OnInit {
 
   //remove point from the field
   removePoint(remove?: boolean) {
-    if (this.splinePointsLength <= 4) {
+    if (this.splinePointsLength <= 0) {
       return;
+    }
+    if (remove) {
+      this.removeBezierCurveLine();
     }
     const point = this.splineHelperObjects.pop();
     this.splinePointsLength--;
     this.positions.pop();
     if (this.transformControl.object === point) this.transformControl.detach();
     this.scene.remove(point);
-    if (remove) {
-      this.removeBezierCurveLine();
-    }
+
     this.updateSplineOutline();
   }
 
@@ -370,6 +430,7 @@ export class SplineEditorComponent implements OnInit {
       opacity: 0.35
     }));
     curve.mesh.castShadow = true;
+    curve.mesh.name = (this.splines.length + 1).toString() + "_mesh"
     this.splines.push(curve);
     const spline = this.splines;
     this.scene.add(spline[0].mesh);
