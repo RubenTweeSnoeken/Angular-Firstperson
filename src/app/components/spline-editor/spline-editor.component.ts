@@ -24,6 +24,9 @@ export class SplineEditorComponent implements OnInit {
   camera: any;
   color = new THREE.Color();
   scene: any;
+  vec: Vector3;
+  pos: Vector3;
+  vector: Vector3;
   renderer: any;
   splineHelperObjects = [];
   splinePointsLength = 8;
@@ -50,8 +53,61 @@ export class SplineEditorComponent implements OnInit {
 
   constructor() { }
 
+
+  keyStrokes() {
+    var mouse = new THREE.Vector2();
+    var raycaster = new THREE.Raycaster();
+
+    const onKeyDown = (event) => {
+
+      switch (event.code) {
+        case 'KeyA':
+          this.addPoint(this.pos);
+          break;
+        case 'KeyD':
+          this.removePoint(true);
+          break;
+        case 'KeyP':
+
+          break;
+      }
+    };
+    document.addEventListener('pointermove', () => this.onPointerMove(event));
+    document.addEventListener('keydown', onKeyDown);
+  }
+
+  onPointerMove(event) {
+    // this.vector = new THREE.Vector3();
+    // this.vector.set((event.clientX / window.innerWidth) * 2 - 1, (event.clientY / window.innerHeight) * 2 + 1, 0);
+    // this.vector.unproject(this.camera);
+
+    // this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    // this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    // this.raycaster.setFromCamera(this.pointer, this.camera);
+    if (!this.vec && !this.pos) {
+      this.vec = new THREE.Vector3(); // create once and reuse
+      this.pos = new THREE.Vector3(); // create once and reuse
+    }
+    this.vec.set(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      - (event.clientY / window.innerHeight) * 2 + 1,
+      0.5);
+
+    this.vec.unproject(this.camera);
+
+    this.vec.sub(this.camera.position).normalize();
+
+    var distance = - this.camera.position.z / this.vec.z;
+
+    this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
+  }
+
+
+
   ngOnInit(): void {
     this.init();
+    this.keyStrokes();
     this.animate();
   }
 
@@ -71,9 +127,9 @@ export class SplineEditorComponent implements OnInit {
   }
 
   //add point to the filed
-  addPoint() {
+  addPoint(position?) {
     this.splinePointsLength++;
-    let obj = this.addSplineObject().position;
+    let obj = this.addSplineObject(position).position;
     this.positions.push(obj);
     this.addBezierCurveLine();
     this.updateSplineOutline();
