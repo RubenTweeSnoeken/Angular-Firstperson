@@ -38,7 +38,7 @@ export class ParticlesComponent implements OnInit {
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
 
-    const sprite = new THREE.TextureLoader().load('../../../assets/sprites/disc.png');
+    const sprite = new THREE.TextureLoader().load('assets/sprites/disc.png');
 
     for (let i = 0; i < 100; i++) {
 

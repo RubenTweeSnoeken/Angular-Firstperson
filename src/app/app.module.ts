@@ -15,6 +15,8 @@ import { VirtualRealityComponent } from './components/virtual-reality/virtual-re
 import { ParticlesComponent } from './components/particles/particles.component';
 import { WaterfountainComponent } from './components/waterfountain/waterfountain.component';
 import { Waterfountain2Component } from './components/waterfountain2/waterfountain2.component';
+import { ScreenRecorderComponent } from './components/sceen-recorder/screen-recorder.component';
+import { SplineEditorComponent } from './components/spline-editor/spline-editor.component';
 
 
 @NgModule({
@@ -34,6 +36,8 @@ import { Waterfountain2Component } from './components/waterfountain2/waterfounta
     ParticlesComponent,
     WaterfountainComponent,
     Waterfountain2Component,
+    ScreenRecorderComponent,
+    SplineEditorComponent,
 
   ],
   imports: [
