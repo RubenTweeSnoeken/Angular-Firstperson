@@ -4,7 +4,6 @@ import {CubicBezierCurve3, Vector3} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {TransformControls} from 'three/examples/jsm/controls/TransformControls.js';
 
-
 @Component({
   selector: 'app-spline-editor',
   templateUrl: './spline-editor.component.html',
@@ -28,7 +27,7 @@ export class SplineEditorComponent implements OnInit {
   canvas: HTMLCanvasElement;
   geometry = new THREE.SphereGeometry(10, 10, 10);
   transformControl: TransformControls;
-  ARC_SEGMENTS: number = 300;
+  ARC_SEGMENTS = 300;
   splines: CubicBezierCurve3[] = [];
   splineMeshes: THREE.Line[] = [];
 
@@ -50,11 +49,11 @@ export class SplineEditorComponent implements OnInit {
           break;
       }
     };
-    document.addEventListener('pointermove', () => this.onPointerMove(event));
+    document.addEventListener('pointermove', (event) => this.onPointerMove(event));
     document.addEventListener('keydown', onKeyDown);
   }
 
-  onPointerMove(event) {
+  onPointerMove(event: MouseEvent) {
     if (!this.vec && !this.pos) {
       this.vec = new THREE.Vector3(); // create once and reuse
       this.pos = new THREE.Vector3(); // create once and reuse
@@ -98,7 +97,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   // add point to the filed
-  addPoint(position?) {
+  addPoint(position?: Vector3) {
     const obj = this.addSplineObject(position).position;
     this.positions.push(obj);
     this.addBezierCurveLine();
@@ -106,31 +105,30 @@ export class SplineEditorComponent implements OnInit {
   }
 
   addBezierCurveLine() {
-    const divided = this.positions.length / 4;
     const spline = this.splines[this.splines.length - 1];
-    if (divided < 1) {
-      if (this.splines.length === 0) {
+    if (this.positions.length <= 4) {
+      if (this.positions.length === 1) {
         this.createNewBezier(1);
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'main';
-      } else if (divided === 0.50 && divided < 1) {
+      } else if (this.positions.length === 2) {
         spline.v1 = this.positions[this.positions.length - 1];
         spline.v2 = this.positions[this.positions.length - 1];
         spline.v3 = this.positions[this.positions.length - 1];
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'first';
-      } else if (divided === 0.75 && divided < 1) {
+      } else if (this.positions.length === 3) {
         spline.v2 = this.positions[this.positions.length - 1];
         spline.v3 = this.positions[this.positions.length - 1];
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'second';
-      } else if (divided === 1) {
+      } else if (this.positions.length === 4) {
         spline.v3 = this.positions[this.positions.length - 1];
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'main';
       }
     } else {
-      if (spline.v3 == spline.v2 && spline.v2 == spline.v1) {
+      if (spline.v3.equals(spline.v2) && spline.v2.equals(spline.v1)) {
         spline.v2 = this.positions[this.positions.length - 1];
         spline.v3 = this.positions[this.positions.length - 1];
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'second';
-      } else if (spline.v3 == spline.v2) {
+      } else if (spline.v3.equals(spline.v2)) {
         spline.v3 = this.positions[this.positions.length - 1];
         this.splineHelperObjects[this.splineHelperObjects.length - 1].type = 'main';
       } else {
@@ -141,42 +139,36 @@ export class SplineEditorComponent implements OnInit {
   }
 
   removeBezierCurveLine() {
-    const divided = this.positions.length / 4;
     const spline = this.splines[this.splines.length - 1];
-    if (divided <= 1) {
-      if (divided === 1) {
+    if (this.positions.length <= 4) {
+      if (this.positions.length === 4) {
         spline.v3 = spline.v2;
-      } else if (divided === 0.75) {
-        spline.v2 = spline.v1;
+      } else if (this.positions.length === 3) {
         spline.v2 = spline.v1;
         spline.v3 = spline.v1;
-      } else if (divided === 0.5) {
+      } else if (this.positions.length === 2) {
         spline.v1 = spline.v0;
         spline.v2 = spline.v0;
         spline.v3 = spline.v0;
-      } else if (divided === 0.25) {
+      } else if (this.positions.length === 1) {
         const selectedObject = this.scene.getObjectByName(this.splines.length.toString() + '_mesh');
         this.scene.remove(selectedObject);
         this.splines.pop();
         this.splineMeshes.pop();
       }
     } else {
-      if (spline.v3 != spline.v2 && spline.v2 != spline.v1) {
+      if (!spline.v3.equals(spline.v2) && !spline.v2.equals(spline.v1)) {
         spline.v3 = spline.v2;
-      } else if (spline.v3 == spline.v2 && spline.v2 != spline.v1) {
+      } else if (spline.v3.equals(spline.v2) && !spline.v2.equals(spline.v1)) {
         spline.v3 = spline.v1;
         spline.v2 = spline.v1;
-      } else if (spline.v3 == spline.v2 && spline.v2 == spline.v1) {
+      } else if (spline.v3.equals(spline.v2) && spline.v2.equals(spline.v1)) {
         const selectedObject = this.scene.getObjectByName(this.splines.length.toString() + '_mesh');
         this.scene.remove(selectedObject);
         this.splines.pop();
         this.splineMeshes.pop();
       }
     }
-  }
-
-  number_test(n) {
-    return (n - Math.floor(n)) !== 0;
   }
 
   // remove point from the field
@@ -190,13 +182,12 @@ export class SplineEditorComponent implements OnInit {
       this.transformControl.detach();
     }
     this.scene.remove(point);
-
     this.updateSplineOutline();
   }
 
   // update the line drawing
   updateSplineOutline() {
-    for (const k in this.splines) {
+    for (let k = 0; k < this.splines.length; k++) {
       const spline = this.splines[k];
       const splineMesh = this.splineMeshes[k];
       const position = splineMesh.geometry.attributes.position;
@@ -209,15 +200,15 @@ export class SplineEditorComponent implements OnInit {
     }
     if (this.transformControl.object) {
       const index = this.splineHelperObjects.findIndex(item => item.uuid === this.transformControl.object.uuid);
-      if (this.transformControl.object.type == 'main' && index !== 0 && this.positions[index + 1]) {
+      if (this.transformControl.object.type === 'main' && index !== 0 && this.positions[index + 1]) {
         this.positions[index - 1].x = (2 * this.positions[index].x) - (this.positions[index + 1].x);
         this.positions[index - 1].y = (2 * this.positions[index].y) - (this.positions[index + 1].y);
         this.positions[index - 1].z = (2 * this.positions[index].z) - (this.positions[index + 1].z);
-      } else if (this.transformControl.object.type == 'first' && index !== 0 && this.positions[index - 2]) {
+      } else if (this.transformControl.object.type === 'first' && index !== 0 && this.positions[index - 2]) {
         this.positions[index - 2].x = (2 * this.positions[index - 1].x) - (this.positions[index].x);
         this.positions[index - 2].y = (2 * this.positions[index - 1].y) - (this.positions[index].y);
         this.positions[index - 2].z = (2 * this.positions[index - 1].z) - (this.positions[index].z);
-      } else if (this.transformControl.object.type == 'second' && index !== 0 && this.positions[index + 2]) {
+      } else if (this.transformControl.object.type === 'second' && index !== 0 && this.positions[index + 2]) {
         this.positions[index + 2].x = (2 * this.positions[index + 1].x) - (this.positions[index].x);
         this.positions[index + 2].y = (2 * this.positions[index + 1].y) - (this.positions[index].y);
         this.positions[index + 2].z = (2 * this.positions[index + 1].z) - (this.positions[index].z);
@@ -255,7 +246,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   // add new bullt point
-  addSplineObject(position?, objectType?: string) {
+  addSplineObject(position?: Vector3, objectType?: string) {
     const material = new THREE.MeshLambertMaterial({color: 0x000000});
     const object = new THREE.Mesh(this.geometry, material);
     object.type = objectType;
@@ -331,13 +322,13 @@ export class SplineEditorComponent implements OnInit {
     this.transformControl.addEventListener('change', () => {
       this.render();
     });
-    this.transformControl.addEventListener('dragging-changed', function(event) {
+    this.transformControl.addEventListener('dragging-changed', (event) => {
       controls.enabled = !event.value;
     });
     this.scene.add(this.transformControl);
     this.transformControl.addEventListener('objectChange', () => {
       this.updateSplineOutline();
     });
-    document.addEventListener('pointerdown', () => this.onPointerDown(event));
+    document.addEventListener('pointerdown', (event) => this.onPointerDown(event));
   }
 }
