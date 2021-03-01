@@ -29,7 +29,7 @@ export class SplineEditorComponent implements OnInit {
   transformControl: TransformControls;
   ARC_SEGMENTS = 300;
   splines: CubicBezierCurve3[] = [];
-  splineMeshes: THREE.Line[] = [];
+  splineLinesMeshes: THREE.Line[] = [];
 
   constructor() {
   }
@@ -45,7 +45,7 @@ export class SplineEditorComponent implements OnInit {
           this.removePoint(true);
           break;
         case 'KeyP':
-
+          this.transformControl.detach();
           break;
       }
     };
@@ -67,6 +67,17 @@ export class SplineEditorComponent implements OnInit {
     this.vec.sub(this.camera.position).normalize();
     const distance = -this.camera.position.z / this.vec.z;
     this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
+
+
+    // const raycaster = new THREE.Raycaster(); // create once
+    // const mouse = new THREE.Vector2(); // create once
+    //
+    //
+    // mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    // mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    //
+    // raycaster.setFromCamera(mouse, this.camera);
+    // this.pos = (raycaster.ray.origin);
   }
 
 
@@ -92,7 +103,7 @@ export class SplineEditorComponent implements OnInit {
     mesh.name = (this.splines.length + 1).toString() + '_mesh';
     mesh.castShadow = true;
     this.splines.push(curve);
-    this.splineMeshes.push(mesh);
+    this.splineLinesMeshes.push(mesh);
     this.scene.add(mesh);
   }
 
@@ -154,7 +165,7 @@ export class SplineEditorComponent implements OnInit {
         const selectedObject = this.scene.getObjectByName(this.splines.length.toString() + '_mesh');
         this.scene.remove(selectedObject);
         this.splines.pop();
-        this.splineMeshes.pop();
+        this.splineLinesMeshes.pop();
       }
     } else {
       if (!spline.v3.equals(spline.v2) && !spline.v2.equals(spline.v1)) {
@@ -166,7 +177,7 @@ export class SplineEditorComponent implements OnInit {
         const selectedObject = this.scene.getObjectByName(this.splines.length.toString() + '_mesh');
         this.scene.remove(selectedObject);
         this.splines.pop();
-        this.splineMeshes.pop();
+        this.splineLinesMeshes.pop();
       }
     }
   }
@@ -189,7 +200,7 @@ export class SplineEditorComponent implements OnInit {
   updateSplineOutline() {
     for (let k = 0; k < this.splines.length; k++) {
       const spline = this.splines[k];
-      const splineMesh = this.splineMeshes[k];
+      const splineMesh = this.splineLinesMeshes[k];
       const position = splineMesh.geometry.attributes.position;
       for (let i = 0; i < this.ARC_SEGMENTS; i++) {
         const t = i / (this.ARC_SEGMENTS - 1);
@@ -230,7 +241,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
   // when clicking on the point
-  onPointerDown(event) {
+  onPointerDown(event: MouseEvent) {
     this.onDownPosition.x = event.clientX;
     this.onDownPosition.y = event.clientY;
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
