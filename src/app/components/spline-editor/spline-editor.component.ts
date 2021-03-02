@@ -3,6 +3,9 @@ import * as THREE from 'three';
 import {CubicBezierCurve3, Vector3} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {TransformControls} from 'three/examples/jsm/controls/TransformControls.js';
+import {HttpClient} from '@angular/common/http';
+import {catchError, map} from 'rxjs/operators';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-spline-editor',
@@ -32,8 +35,13 @@ export class SplineEditorComponent implements OnInit {
   splineLinesMeshes: THREE.Line[] = [];
   locked: boolean;
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.locked = false;
+    this.getPosts();
+  }
+
+  getPosts() {
+
   }
 
 
@@ -57,7 +65,10 @@ export class SplineEditorComponent implements OnInit {
     document.addEventListener('keydown', onKeyDown);
   }
 
-  onPointerMove(event: MouseEvent) {
+  onPointerMove(event
+                  :
+                  MouseEvent
+  ) {
     if (!this.vec && !this.pos) {
       this.vec = new THREE.Vector3(); // create once and reuse
       this.pos = new THREE.Vector3(); // create once and reuse
@@ -85,13 +96,18 @@ export class SplineEditorComponent implements OnInit {
   }
 
 
-  ngOnInit(): void {
+  ngOnInit()
+    :
+    void {
     this.init();
     this.keyStrokes();
     this.animate();
   }
 
-  createNewBezier(value: number) {
+  createNewBezier(value
+                    :
+                    number
+  ) {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
     const curve = new THREE.CubicBezierCurve3(
@@ -111,8 +127,8 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(mesh);
   }
 
-  // add point to the filed
-  addPoint(position?: Vector3) {
+// add point to the filed
+  addPoint(position ?: Vector3) {
     const obj = this.addSplineObject(position).position;
     this.positions.push(obj);
     this.addBezierCurveLine();
@@ -186,8 +202,8 @@ export class SplineEditorComponent implements OnInit {
     }
   }
 
-  // remove point from the field
-  removePoint(remove?: boolean) {
+// remove point from the field
+  removePoint(remove ?: boolean) {
     if (remove) {
       this.removeBezierCurveLine();
     }
@@ -200,7 +216,7 @@ export class SplineEditorComponent implements OnInit {
     this.updateSplineOutline();
   }
 
-  // update the line drawing
+// update the line drawing
   updateSplineOutline() {
     for (let k = 0; k < this.splines.length; k++) {
       const spline = this.splines[k];
@@ -234,20 +250,23 @@ export class SplineEditorComponent implements OnInit {
     this.render();
   }
 
-  // animate the
+// animate the
   animate() {
     requestAnimationFrame(() => this.animate());
     this.render();
     // this.stats.update();
   }
 
-  // render the view
+// render the view
   render() {
     this.renderer.render(this.scene, this.camera);
   }
 
-  // when clicking on the point
-  onPointerDown(event: MouseEvent) {
+// when clicking on the point
+  onPointerDown(event
+                  :
+                  MouseEvent
+  ) {
     this.onDownPosition.x = event.clientX;
     this.onDownPosition.y = event.clientY;
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -262,8 +281,8 @@ export class SplineEditorComponent implements OnInit {
     }
   }
 
-  // add new bullt point
-  addSplineObject(position?: Vector3, objectType?: string) {
+// add new bullt point
+  addSplineObject(position ?: Vector3, objectType ?: string) {
     const material = new THREE.MeshLambertMaterial({color: 0x000000});
     const object = new THREE.Mesh(this.geometry, material);
     object.type = objectType;
@@ -294,7 +313,7 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(light);
   }
 
-  // init the whole project
+// init the whole project
   init() {
     this.container = document.getElementById('container');
     this.scene = new THREE.Scene();

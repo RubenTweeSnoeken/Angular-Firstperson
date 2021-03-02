@@ -18,7 +18,8 @@ import {Waterfountain2Component} from './components/waterfountain2/waterfountain
 import {ScreenRecorderComponent} from './components/sceen-recorder/screen-recorder.component';
 import {SplineEditorComponent} from './components/spline-editor/spline-editor.component';
 import {PathFollowComponent} from './components/path-follow/path-follow.component';
-import { TestFileComponent } from './components/test-file/test-file.component';
+import {TestFileComponent} from './components/test-file/test-file.component';
+import {HttpClientModule} from '@angular/common/http';
 
 
 @NgModule({
@@ -42,11 +43,12 @@ import { TestFileComponent } from './components/test-file/test-file.component';
     SplineEditorComponent,
     PathFollowComponent,
     TestFileComponent,
-
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+
   ],
   providers: [],
   bootstrap: [
