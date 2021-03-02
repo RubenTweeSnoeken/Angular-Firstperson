@@ -30,8 +30,10 @@ export class SplineEditorComponent implements OnInit {
   ARC_SEGMENTS = 300;
   splines: CubicBezierCurve3[] = [];
   splineLinesMeshes: THREE.Line[] = [];
+  locked: boolean;
 
   constructor() {
+    this.locked = false;
   }
 
 
@@ -47,6 +49,8 @@ export class SplineEditorComponent implements OnInit {
         case 'KeyP':
           this.transformControl.detach();
           break;
+        case 'KeyL':
+          this.locked = !this.locked;
       }
     };
     document.addEventListener('pointermove', (event) => this.onPointerMove(event));
@@ -211,18 +215,20 @@ export class SplineEditorComponent implements OnInit {
     }
     if (this.transformControl.object) {
       const index = this.splineHelperObjects.findIndex(item => item.uuid === this.transformControl.object.uuid);
-      if (this.transformControl.object.type === 'main' && index !== 0 && this.positions[index + 1]) {
-        this.positions[index - 1].x = (2 * this.positions[index].x) - (this.positions[index + 1].x);
-        this.positions[index - 1].y = (2 * this.positions[index].y) - (this.positions[index + 1].y);
-        this.positions[index - 1].z = (2 * this.positions[index].z) - (this.positions[index + 1].z);
-      } else if (this.transformControl.object.type === 'first' && index !== 0 && this.positions[index - 2]) {
-        this.positions[index - 2].x = (2 * this.positions[index - 1].x) - (this.positions[index].x);
-        this.positions[index - 2].y = (2 * this.positions[index - 1].y) - (this.positions[index].y);
-        this.positions[index - 2].z = (2 * this.positions[index - 1].z) - (this.positions[index].z);
-      } else if (this.transformControl.object.type === 'second' && index !== 0 && this.positions[index + 2]) {
-        this.positions[index + 2].x = (2 * this.positions[index + 1].x) - (this.positions[index].x);
-        this.positions[index + 2].y = (2 * this.positions[index + 1].y) - (this.positions[index].y);
-        this.positions[index + 2].z = (2 * this.positions[index + 1].z) - (this.positions[index].z);
+      if (this.locked === true) {
+        if (this.transformControl.object.type === 'main' && index !== 0 && this.positions[index + 1]) {
+          this.positions[index - 1].x = (2 * this.positions[index].x) - (this.positions[index + 1].x);
+          this.positions[index - 1].y = (2 * this.positions[index].y) - (this.positions[index + 1].y);
+          this.positions[index - 1].z = (2 * this.positions[index].z) - (this.positions[index + 1].z);
+        } else if (this.transformControl.object.type === 'first' && index !== 0 && this.positions[index - 2]) {
+          this.positions[index - 2].x = (2 * this.positions[index - 1].x) - (this.positions[index].x);
+          this.positions[index - 2].y = (2 * this.positions[index - 1].y) - (this.positions[index].y);
+          this.positions[index - 2].z = (2 * this.positions[index - 1].z) - (this.positions[index].z);
+        } else if (this.transformControl.object.type === 'second' && index !== 0 && this.positions[index + 2]) {
+          this.positions[index + 2].x = (2 * this.positions[index + 1].x) - (this.positions[index].x);
+          this.positions[index + 2].y = (2 * this.positions[index + 1].y) - (this.positions[index].y);
+          this.positions[index + 2].z = (2 * this.positions[index + 1].z) - (this.positions[index].z);
+        }
       }
     }
     this.render();

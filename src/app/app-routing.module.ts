@@ -15,6 +15,7 @@ import {Waterfountain2Component} from './components/waterfountain2/waterfountain
 import {ScreenRecorderComponent} from './components/sceen-recorder/screen-recorder.component';
 import {SplineEditorComponent} from './components/spline-editor/spline-editor.component';
 import {PathFollowComponent} from './components/path-follow/path-follow.component';
+import {TestFileComponent} from './components/test-file/test-file.component';
 
 const routes: Routes = [
   {path: 'qubusSimple', component: QubusSimpleComponent},
@@ -31,6 +32,7 @@ const routes: Routes = [
   {path: 'screen-recorder', component: ScreenRecorderComponent},
   {path: 'spline-editor', component: SplineEditorComponent},
   {path: 'path', component: PathFollowComponent},
+  {path: 'test', component: TestFileComponent},
 
 ];
 

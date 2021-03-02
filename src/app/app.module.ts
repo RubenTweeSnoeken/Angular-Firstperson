@@ -18,6 +18,7 @@ import {Waterfountain2Component} from './components/waterfountain2/waterfountain
 import {ScreenRecorderComponent} from './components/sceen-recorder/screen-recorder.component';
 import {SplineEditorComponent} from './components/spline-editor/spline-editor.component';
 import {PathFollowComponent} from './components/path-follow/path-follow.component';
+import { TestFileComponent } from './components/test-file/test-file.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import {PathFollowComponent} from './components/path-follow/path-follow.componen
     ScreenRecorderComponent,
     SplineEditorComponent,
     PathFollowComponent,
+    TestFileComponent,
 
   ],
   imports: [
