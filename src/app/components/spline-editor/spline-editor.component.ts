@@ -4,8 +4,9 @@ import {CubicBezierCurve3, Vector3} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {TransformControls} from 'three/examples/jsm/controls/TransformControls.js';
 import {HttpClient} from '@angular/common/http';
-import {catchError, map} from 'rxjs/operators';
-import {Observable} from "rxjs";
+import {SplineService} from '../../services/spline/spline.service';
+import {Spline} from "../../models/spline/spline.model";
+
 
 @Component({
   selector: 'app-spline-editor',
@@ -34,14 +35,18 @@ export class SplineEditorComponent implements OnInit {
   splines: CubicBezierCurve3[] = [];
   splineLinesMeshes: THREE.Line[] = [];
   locked: boolean;
+  apiSplines: Spline[];
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
-    this.getPosts();
+    this.apiSplines = [];
+    this.getSplines();
   }
 
-  getPosts() {
-
+  getSplines() {
+    this.splineService.getSplines().subscribe((splines: Spline[]) => {
+      this.apiSplines = splines;
+    });
   }
 
 
