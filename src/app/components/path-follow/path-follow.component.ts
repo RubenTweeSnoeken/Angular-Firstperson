@@ -109,11 +109,29 @@ export class PathFollowComponent implements OnInit {
       wireframe: true,
       transparent: true
     });
+    this.renderer = new THREE.WebGLRenderer({antialias: true});
   }
 
   ngOnInit(): void {
     this.init();
+    this.keyStrokes();
     this.animate();
+  }
+
+  keyStrokes() {
+    const onKeyDown = (event) => {
+      switch (event.code) {
+        case 'KeyP':
+          this.params.animationView = true;
+          this.animateCamera();
+          break;
+        case 'KeyZ':
+          this.params.animationView = false;
+          this.animateCamera();
+          break;
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
   }
 
   addTube() {
@@ -249,9 +267,13 @@ export class PathFollowComponent implements OnInit {
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    if (this.camera) {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+    }
+    if (this.renderer) {
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
   }
 
 
