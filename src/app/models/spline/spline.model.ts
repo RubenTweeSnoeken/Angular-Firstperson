@@ -1,5 +1,6 @@
+import {Point} from '../point/point.model';
+
 export class Spline {
-  x: number;
-  y: number;
-  z: number;
+  id: string;
+  points: [Point];
 }

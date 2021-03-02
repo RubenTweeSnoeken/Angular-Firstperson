@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Spline} from '../../models/spline/spline.model';
 import {HttpClient} from '@angular/common/http';
-import {map} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,15 +16,14 @@ export class SplineService {
   }
 
 
-  getSplines() {
-    console.log('getPeople ' + this.baseURL + 'Spline');
-    return this.httpClient.get(this.baseURL + 'Spline').pipe(
-      map((splines: any) => {
-        return splines.map((spline) => ({
-          uid: spline.payload.doc.id,
-          ...spline.payload.doc.data(),
-        }));
-      })
-    );
+  getSpline(id?: string) {
+    return this.httpClient.get(this.baseURL + 'Spline/' + id).pipe(map((splines: Spline) => {
+      return splines;
+    }));
   }
+
+  async editSpline(id: string, spline: Spline) {
+    return this.httpClient.put<Spline>(this.baseURL + 'Spline/' + id, spline);
+  }
+
 }

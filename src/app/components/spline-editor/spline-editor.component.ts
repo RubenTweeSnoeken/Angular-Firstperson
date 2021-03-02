@@ -5,7 +5,10 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {TransformControls} from 'three/examples/jsm/controls/TransformControls.js';
 import {HttpClient} from '@angular/common/http';
 import {SplineService} from '../../services/spline/spline.service';
-import {Spline} from "../../models/spline/spline.model";
+import {Spline} from '../../models/spline/spline.model';
+import {Observer, Subscribable} from 'rxjs';
+import {element} from 'protractor';
+import {Point} from '../../models/point/point.model';
 
 
 @Component({
@@ -35,20 +38,40 @@ export class SplineEditorComponent implements OnInit {
   splines: CubicBezierCurve3[] = [];
   splineLinesMeshes: THREE.Line[] = [];
   locked: boolean;
-  apiSplines: Spline[];
+  apiSpline: Spline;
+  splineObserver: any;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
-    this.apiSplines = [];
-    this.getSplines();
   }
 
-  getSplines() {
-    this.splineService.getSplines().subscribe((splines: Spline[]) => {
-      this.apiSplines = splines;
+  async ngOnInit(): Promise<void> {
+    await this.init();
+    this.keyStrokes();
+    this.animate();
+  }
+
+  async getSpline() {
+    this.splineObserver = await this.splineService.getSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6').subscribe((spline: Spline) => {
+      this.apiSpline = spline;
+      // tslint:disable-next-line:no-shadowed-variable
+      this.apiSpline.points.forEach((element: Point) => {
+        this.addPoint(new THREE.Vector3(element.x, element.y, element.z));
+      });
     });
   }
 
+  async updateSpline() {
+    this.apiSpline.points[0].x = 100;
+    await this.splineService.editSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6', this.apiSpline).then(e => {
+
+    });
+  }
+
+  // tslint:disable-next-line:use-lifecycle-interface
+  ngOnDestroy() {
+    this.splineObserver?.unsubscribe();
+  }
 
   keyStrokes() {
     const onKeyDown = (event) => {
@@ -70,10 +93,7 @@ export class SplineEditorComponent implements OnInit {
     document.addEventListener('keydown', onKeyDown);
   }
 
-  onPointerMove(event
-                  :
-                  MouseEvent
-  ) {
+  onPointerMove(event: MouseEvent) {
     if (!this.vec && !this.pos) {
       this.vec = new THREE.Vector3(); // create once and reuse
       this.pos = new THREE.Vector3(); // create once and reuse
@@ -87,32 +107,9 @@ export class SplineEditorComponent implements OnInit {
     this.vec.sub(this.camera.position).normalize();
     const distance = -this.camera.position.z / this.vec.z;
     this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
-
-
-    // const raycaster = new THREE.Raycaster(); // create once
-    // const mouse = new THREE.Vector2(); // create once
-    //
-    //
-    // mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    // mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
-    //
-    // raycaster.setFromCamera(mouse, this.camera);
-    // this.pos = (raycaster.ray.origin);
   }
 
-
-  ngOnInit()
-    :
-    void {
-    this.init();
-    this.keyStrokes();
-    this.animate();
-  }
-
-  createNewBezier(value
-                    :
-                    number
-  ) {
+  createNewBezier(value: number) {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(this.ARC_SEGMENTS * 3), 3));
     const curve = new THREE.CubicBezierCurve3(
@@ -319,7 +316,7 @@ export class SplineEditorComponent implements OnInit {
   }
 
 // init the whole project
-  init() {
+  async init() {
     this.container = document.getElementById('container');
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf0f0f0);
@@ -351,7 +348,6 @@ export class SplineEditorComponent implements OnInit {
     this.addPoint(new THREE.Vector3(-153.56300074753207, 271.49711742836848, -114.495472686253045));
     this.addPoint(new THREE.Vector3(-191.40118730204415, 276.4306956436485, -106.958271935582161));
     this.addPoint(new THREE.Vector3(-483.785318791128, 591.1365363371675, 147.869296953772746));
-
   }
 
   createControls() {
