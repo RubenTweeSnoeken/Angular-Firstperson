@@ -132,15 +132,13 @@ export class TestFileComponent implements OnInit {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ARC_SEGMENTS * 3), 3));
       let curve = new THREE.CatmullRomCurve3(positions);
-      curve.curveType = 'catmullrom';
       curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
         color: 0xff0000,
-        opacity: 0.35
+        opacity: 0
       }));
       curve.mesh.castShadow = true;
       splines.uniform = curve;
       curve = new THREE.CatmullRomCurve3(positions);
-      curve.curveType = 'centripetal';
       curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
         color: 0x00b300,
         opacity: 0.35
@@ -148,7 +146,6 @@ export class TestFileComponent implements OnInit {
       curve.mesh.castShadow = true;
       splines.centripetal = curve;
       curve = new THREE.CatmullRomCurve3(positions);
-      curve.curveType = 'chordal';
       curve.mesh = new THREE.Line(geometry.clone(), new THREE.LineBasicMaterial({
         color: 0x0000ff,
         opacity: 0.35
@@ -159,10 +156,10 @@ export class TestFileComponent implements OnInit {
         const spline = splines[k];
         scene.add(spline.mesh);
       }
-      load([new THREE.Vector3(289.76843686945404, 452.51481137238443, 56.10018915737797),
-        new THREE.Vector3(-53.56300074753207, 171.49711742836848, -14.495472686253045),
-        new THREE.Vector3(-91.40118730204415, 176.4306956436485, -6.958271935582161),
-        new THREE.Vector3(-383.785318791128, 491.1365363371675, 47.869296953772746)]);
+      load([new THREE.Vector3(289.76843686945404, 200, 56.10018915737797),
+        new THREE.Vector3(-53.56300074753207, 200, -14.495472686253045),
+        new THREE.Vector3(-91.40118730204415, 200, -14.495472686253045),
+        new THREE.Vector3(-383.785318791128, 200, 47.869296953772746)]);
     }
 
     function addSplineObject(position) {

@@ -22,8 +22,6 @@ export class PathFollowComponent implements OnInit {
   normal: THREE.Vector3;
   position: THREE.Vector3;
   lookAt: THREE.Vector3;
-  pipeSpline: THREE.CatmullRomCurve3;
-  sampleClosedSpline: THREE.CatmullRomCurve3;
   splines: any;
   parent: THREE.Object3D;
   tubeGeometry: THREE.TubeGeometry;
@@ -38,33 +36,7 @@ export class PathFollowComponent implements OnInit {
     this.normal = new THREE.Vector3();
     this.position = new THREE.Vector3();
     this.lookAt = new THREE.Vector3();
-    this.pipeSpline = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 10, -10), new THREE.Vector3(10, 0, -10),
-      new THREE.Vector3(20, 0, 0), new THREE.Vector3(30, 0, 10),
-      new THREE.Vector3(30, 0, 20), new THREE.Vector3(20, 0, 30),
-      new THREE.Vector3(10, 0, 30), new THREE.Vector3(0, 0, 30),
-      new THREE.Vector3(-10, 10, 30), new THREE.Vector3(-10, 20, 30),
-      new THREE.Vector3(0, 30, 30), new THREE.Vector3(10, 30, 30),
-      new THREE.Vector3(20, 30, 15), new THREE.Vector3(10, 30, 10),
-      new THREE.Vector3(0, 30, 10), new THREE.Vector3(-10, 20, 10),
-      new THREE.Vector3(-10, 10, 10), new THREE.Vector3(0, 0, 10),
-      new THREE.Vector3(10, -10, 10), new THREE.Vector3(20, -15, 10),
-      new THREE.Vector3(30, -15, 10), new THREE.Vector3(40, -15, 10),
-      new THREE.Vector3(50, -15, 10), new THREE.Vector3(60, 0, 10),
-      new THREE.Vector3(70, 0, 0), new THREE.Vector3(80, 0, 0),
-      new THREE.Vector3(90, 0, 0), new THREE.Vector3(100, 0, 0)
-    ]);
-    this.sampleClosedSpline = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, -40, -40),
-      new THREE.Vector3(0, 40, -40),
-      new THREE.Vector3(0, 140, -40),
-      new THREE.Vector3(0, 40, 40),
-      new THREE.Vector3(0, -40, 40)
-    ]);
-    // @ts-ignore
-    this.sampleClosedSpline.curveType = 'catmullrom';
-    // @ts-ignore
-    this.sampleClosedSpline.closed = true;
+
     this.splines = {
       DecoratedTorusKnot5c: new Curves.DecoratedTorusKnot5c(),
     };

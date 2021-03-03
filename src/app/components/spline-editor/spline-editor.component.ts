@@ -40,6 +40,7 @@ export class SplineEditorComponent implements OnInit {
   locked: boolean;
   apiSpline: Spline;
   splineObserver: any;
+  splineUpdateObserver: any;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
@@ -63,14 +64,14 @@ export class SplineEditorComponent implements OnInit {
 
   async updateSpline() {
     this.apiSpline.points[0].x = 100;
-    await this.splineService.editSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6', this.apiSpline).then(e => {
-
+    this.splineUpdateObserver = await this.splineService.editSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6', this.apiSpline).then(e => {
     });
   }
 
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy() {
     this.splineObserver?.unsubscribe();
+    this.splineUpdateObserver?.unsubscribe();
   }
 
   keyStrokes() {
