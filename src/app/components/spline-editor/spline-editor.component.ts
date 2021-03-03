@@ -41,9 +41,29 @@ export class SplineEditorComponent implements OnInit {
   apiSpline: Spline;
   splineObserver: any;
   splineUpdateObserver: any;
+  splineData: THREE.CubicBezierCurve3;
+  radius: number;
+  geometry2: THREE.TubeBufferGeometry;
+  tubeMaterial: THREE.MeshBasicMaterial;
+  percentage: number;
+  prevTime: number;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
+
+    // tube maken
+    this.radius = .25;
+    this.geometry2 = new THREE.TubeGeometry(this.splineData, 50, this.radius, 10, false);
+
+    this.tubeMaterial = new THREE.MeshBasicMaterial({
+      side: THREE.BackSide,
+      transparent: true,
+      opacity: 1
+    });
+    const tube = new THREE.Mesh(this.geometry2, this.tubeMaterial);
+    this.scene.add(tube);
+    this.percentage = 0;
+    this.prevTime = Date.now();
   }
 
   async ngOnInit(): Promise<void> {
@@ -257,6 +277,8 @@ export class SplineEditorComponent implements OnInit {
   animate() {
     requestAnimationFrame(() => this.animate());
     this.render();
+    this.moveCamera();
+
     // this.stats.update();
   }
 
@@ -368,5 +390,16 @@ export class SplineEditorComponent implements OnInit {
       this.updateSplineOutline();
     });
     document.addEventListener('pointerdown', (event) => this.onPointerDown(event));
+  }
+
+  moveCamera() {
+    this.percentage += 0.00095;
+    const p1 = this.splineData.getPointAt(this.percentage % 1);
+    const p2 = this.splineData.getPointAt((this.percentage + 0.01) % 1);
+
+    this.camera.position.x = p1.x;
+    this.camera.position.y = p1.y + 1.75;
+    this.camera.position.z = p1.z;
+    this.camera.lookAt(p2.x, p2.y + 1.5, p2.z);
   }
 }
