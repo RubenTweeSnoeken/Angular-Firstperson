@@ -34,36 +34,61 @@ export class SplineEditorComponent implements OnInit {
   canvas: HTMLCanvasElement;
   geometry = new THREE.SphereGeometry(10, 10, 10);
   transformControl: TransformControls;
-  ARC_SEGMENTS = 300;
+  ARC_SEGMENTS = 1000;
   splines: CubicBezierCurve3[] = [];
   splineLinesMeshes: THREE.Line[] = [];
   locked: boolean;
   apiSpline: Spline;
   splineObserver: any;
   splineUpdateObserver: any;
-  percentage: number;
   curvePath: THREE.CubicBezierCurve3;
   canMove: boolean;
+  splineIndex: number;
+  camPosIndex: number;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
-    this.percentage = 0;
     this.curvePath = new THREE.CubicBezierCurve3(new THREE.Vector3(389.76843686945404, 552.51481137238443, 156.10018915737797),
       new THREE.Vector3(-153.56300074753207, 271.49711742836848, -114.495472686253045),
       new THREE.Vector3(-191.40118730204415, 276.4306956436485, -106.958271935582161),
       new THREE.Vector3(-483.785318791128, 591.1365363371675, 147.869296953772746));
     this.canMove = false;
+    this.splineIndex = 0;
+    this.camPosIndex = 0;
+
   }
 
   moveCamera() {
-    this.percentage += 0.00095;
-    const p1 = this.curvePath.getPointAt(this.percentage % 1);
-    const p2 = this.curvePath.getPointAt((this.percentage + 0.01) % 1);
+    // const curvee = new THREE.CurvePath();
+    // this.splines.forEach(element => {
+    //   curvee.add(element);
+    // });
+    // curvee.autoClose = false;
+
+    if (this.camPosIndex === this.ARC_SEGMENTS) {
+      if (this.splineIndex !== this.splines.length - 1) {
+        this.splineIndex++;
+      } else {
+        this.splineIndex = 0;
+      }
+    }
+    this.camPosIndex++;
+    if (this.camPosIndex > this.ARC_SEGMENTS) {
+      this.camPosIndex = 0;
+    }
+
+    const p1 = this.splines[this.splineIndex].getPoint(this.camPosIndex / this.ARC_SEGMENTS);
+    const p2 = this.splines[this.splineIndex].getTangent((this.camPosIndex / this.ARC_SEGMENTS));
 
     this.camera.position.x = p1.x;
-    this.camera.position.y = p1.y + 1.75;
+    this.camera.position.y = p1.y;
     this.camera.position.z = p1.z;
-    this.camera.lookAt(p2.x, p2.y + 1.5, p2.z);
+
+    this.camera.rotation.x = p2.x;
+    this.camera.rotation.y = p2.y;
+    this.camera.rotation.z = p2.z;
+
+    this.camera.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + 1) / this.ARC_SEGMENTS));
   }
 
   async ngOnInit(): Promise<void> {
@@ -99,6 +124,7 @@ export class SplineEditorComponent implements OnInit {
       switch (event.code) {
         case 'KeyA':
           this.addPoint(this.pos);
+          console.log(this.splines);
           break;
         case 'KeyD':
           this.removePoint(true);
@@ -283,6 +309,7 @@ export class SplineEditorComponent implements OnInit {
     if (this.canMove) {
       this.moveCamera();
     }
+
     // this.moveCamera();
   }
 
@@ -371,10 +398,10 @@ export class SplineEditorComponent implements OnInit {
     this.container.appendChild(this.renderer.domElement);
     this.createControls();
 
-    this.addPoint(new THREE.Vector3(389.76843686945404, 552.51481137238443, 156.10018915737797));
-    this.addPoint(new THREE.Vector3(-153.56300074753207, 271.49711742836848, -114.495472686253045));
-    this.addPoint(new THREE.Vector3(-191.40118730204415, 276.4306956436485, -106.958271935582161));
-    this.addPoint(new THREE.Vector3(-483.785318791128, 591.1365363371675, 147.869296953772746));
+    this.addPoint(new THREE.Vector3(389, 552, 156));
+    this.addPoint(new THREE.Vector3(-153, 271, -114));
+    this.addPoint(new THREE.Vector3(-191, 276, -106));
+    this.addPoint(new THREE.Vector3(-483, 591, 147));
   }
 
 
