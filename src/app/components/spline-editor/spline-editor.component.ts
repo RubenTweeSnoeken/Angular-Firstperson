@@ -64,7 +64,6 @@ export class SplineEditorComponent implements OnInit {
     //   curvee.add(element);
     // });
     // curvee.autoClose = false;
-
     if (this.camPosIndex === this.ARC_SEGMENTS) {
       if (this.splineIndex !== this.splines.length - 1) {
         this.splineIndex++;

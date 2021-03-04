@@ -29,7 +29,8 @@ export class PathFollowComponent implements OnInit {
   params: any;
   material: THREE.MeshLambertMaterial;
   wireframeMaterial: THREE.MeshBasicMaterial;
-
+  splineData: THREE.CubicBezierCurve3;
+  bezierCurve: THREE.CurvePath<THREE.Vector3>;
 
   constructor() {
     this.direction = new THREE.Vector3();
@@ -57,13 +58,6 @@ export class PathFollowComponent implements OnInit {
       transparent: true
     });
     this.renderer = new THREE.WebGLRenderer({antialias: true});
-
-    // this.splineData = new THREE.CubicBezierCurve3(new THREE.Vector3(389.76843686945404, 552.51481137238443, 156.10018915737797),
-    //   new THREE.Vector3(-153.56300074753207, 271.49711742836848, -114.495472686253045),
-    //   new THREE.Vector3(-191.40118730204415, 276.4306956436485, -106.958271935582161),
-    //   new THREE.Vector3(-483.785318791128, 591.1365363371675, 147.869296953772746));
-
-
   }
 
   ngOnInit() {
@@ -155,13 +149,8 @@ export class PathFollowComponent implements OnInit {
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
     controls.minDistance = 100;
     controls.maxDistance = 2000;
-
-
     window.addEventListener('resize', () => this.onWindowResize());
   }
-
-
-
 
   onWindowResize() {
     if (this.camera) {
