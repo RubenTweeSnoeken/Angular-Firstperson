@@ -171,7 +171,7 @@ export class PathFollowComponent implements OnInit {
   render() {
     // animate camera along spline
     const time = Date.now();
-    const loopTime = 100 * 1000;
+    const loopTime = 30 * 1000;
     const t = (time % loopTime) / loopTime;
     this.tubeGeometry.parameters.path.getPointAt(t, this.position);
     this.position.multiplyScalar(this.params.scale);
