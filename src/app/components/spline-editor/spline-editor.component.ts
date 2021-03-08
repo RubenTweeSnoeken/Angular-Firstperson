@@ -91,7 +91,8 @@ export class SplineEditorComponent implements OnInit {
     this.arrowHelper.rotation.z = p2.z;
 
 
-    // this.camera.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + 1) / this.ARC_SEGMENTS));
+    // tslint:disable-next-line:max-line-length
+    this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength())) / this.ARC_SEGMENTS));
   }
 
   async ngOnInit(): Promise<void> {
