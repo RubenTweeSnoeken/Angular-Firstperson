@@ -46,6 +46,7 @@ export class SplineEditorComponent implements OnInit {
   splineIndex: number;
   camPosIndex: number;
   arrowHelper: THREE.Mesh;
+  percentage: number = 0;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
@@ -67,19 +68,19 @@ export class SplineEditorComponent implements OnInit {
   }
 
   moveCamera() {
-    if (this.camPosIndex === this.ARC_SEGMENTS) {
+    this.camPosIndex = this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength());
+    if (this.camPosIndex >= this.ARC_SEGMENTS) {
       if (this.splineIndex !== this.splines.length - 1) {
         this.splineIndex++;
       } else {
         this.splineIndex = 0;
       }
     }
-    this.camPosIndex++;
     if (this.camPosIndex > this.ARC_SEGMENTS) {
       this.camPosIndex = 0;
     }
-    const p1 = this.splines[this.splineIndex].getPoint(this.camPosIndex / this.ARC_SEGMENTS);
-    const p2 = this.splines[this.splineIndex].getTangent((this.camPosIndex / this.ARC_SEGMENTS));
+    const p1 = this.splines[this.splineIndex].getPointAt(this.camPosIndex / this.ARC_SEGMENTS);
+    const p2 = this.splines[this.splineIndex].getPointAt((this.camPosIndex / this.ARC_SEGMENTS));
 
     this.arrowHelper.position.x = p1.x;
     this.arrowHelper.position.y = p1.y;
@@ -88,6 +89,7 @@ export class SplineEditorComponent implements OnInit {
     this.arrowHelper.rotation.x = p2.x;
     this.arrowHelper.rotation.y = p2.y;
     this.arrowHelper.rotation.z = p2.z;
+
 
     // this.camera.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + 1) / this.ARC_SEGMENTS));
   }
@@ -138,6 +140,13 @@ export class SplineEditorComponent implements OnInit {
           break;
         case 'KeyI':
           this.canMove = !this.canMove;
+          break;
+        case 'KeyM':
+          for (let k = 0; k < this.splines.length; k++) {
+            console.log(this.splines[k].getLength());
+          }
+          console.log('-----------------------------------');
+          break;
       }
     };
     document.addEventListener('pointermove', (event) => this.onPointerMove(event));

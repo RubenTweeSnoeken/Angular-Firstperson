@@ -70,25 +70,8 @@ export class TestFileComponent implements OnInit {
     this.light2.position.set(-1, -1, -1).normalize();
     this.scene.add(this.light2);
 
-    this.points = [
-      [-1.5, 0.0, 0.0],
-      [-1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [1.5, 0.0, 0.0],
-      [1.2775949239730835, -0.8299283981323242, -0.26480546593666077],
-      [0.6446040868759155, -1.443454623222351, 0.40014150738716125],
-      [0.45479920506477356, -1.0621963739395142, 1.0581027269363403],
-      [0.8405577540397644, -0.10755002498626709, 1.124037742614746],
-    ];
 
     this.scale = 5;
-
-    for (let i = 0; i < this.points.length; i++) {
-      const x = this.points[i][0] * this.scale;
-      const y = this.points[i][1] * this.scale;
-      const z = this.points[i][2] * this.scale;
-      this.points[i] = new THREE.Vector3(x, z, -y);
-    }
 
     this.percentage = 0;
     this.prevTime = Date.now();
