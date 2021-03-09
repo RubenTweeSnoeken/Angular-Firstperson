@@ -41,24 +41,18 @@ export class SplineEditorComponent implements OnInit {
   apiSpline: Spline;
   splineObserver: any;
   splineUpdateObserver: any;
-  curvePath: THREE.CubicBezierCurve3;
   canMove: boolean;
   splineIndex: number;
   camPosIndex: number;
   arrowHelper: THREE.Mesh;
-  percentage: number = 0;
+  controls: OrbitControls;
 
   constructor(private splineService: SplineService, private httpClient: HttpClient) {
     this.locked = false;
-    this.curvePath = new THREE.CubicBezierCurve3(new THREE.Vector3(389.76843686945404, 552.51481137238443, 156.10018915737797),
-      new THREE.Vector3(-153.56300074753207, 271.49711742836848, -114.495472686253045),
-      new THREE.Vector3(-191.40118730204415, 276.4306956436485, -106.958271935582161),
-      new THREE.Vector3(-483.785318791128, 591.1365363371675, 147.869296953772746));
     this.canMove = false;
     this.splineIndex = 0;
     this.camPosIndex = 0;
   }
-
 
   createObject() {
     const geometry = new THREE.SphereGeometry(20, 32, 32);
@@ -78,17 +72,18 @@ export class SplineEditorComponent implements OnInit {
     }
     if (this.camPosIndex > this.ARC_SEGMENTS) {
       this.camPosIndex = 0;
+      this.camPosIndex = this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength());
     }
     const p1 = this.splines[this.splineIndex].getPointAt(this.camPosIndex / this.ARC_SEGMENTS);
-    const p2 = this.splines[this.splineIndex].getPointAt((this.camPosIndex / this.ARC_SEGMENTS));
+    const p2 = this.splines[this.splineIndex].getTangentAt((this.camPosIndex / this.ARC_SEGMENTS));
 
     this.arrowHelper.position.x = p1.x;
     this.arrowHelper.position.y = p1.y;
     this.arrowHelper.position.z = p1.z;
 
-    this.arrowHelper.rotation.x = p2.x;
-    this.arrowHelper.rotation.y = p2.y;
-    this.arrowHelper.rotation.z = p2.z;
+    // this.camera.rotation.x = p2.x;
+    // this.camera.rotation.y = p2.y;
+    // this.camera.rotation.z = p2.z;
 
 
     // tslint:disable-next-line:max-line-length
@@ -140,6 +135,7 @@ export class SplineEditorComponent implements OnInit {
           this.locked = !this.locked;
           break;
         case 'KeyI':
+          this.controls.enabled = !this.controls.enabled;
           this.canMove = !this.canMove;
           break;
         case 'KeyM':
@@ -415,15 +411,15 @@ export class SplineEditorComponent implements OnInit {
 
   createControls() {
     // Controls
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
-    controls.dampingFactor = 0.2;
-    controls.addEventListener('change', () => this.render());
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.dampingFactor = 0.2;
+    this.controls.addEventListener('change', () => this.render());
     this.transformControl = new TransformControls(this.camera, this.renderer.domElement);
     this.transformControl.addEventListener('change', () => {
       this.render();
     });
     this.transformControl.addEventListener('dragging-changed', (event) => {
-      controls.enabled = !event.value;
+      this.controls.enabled = !event.value;
     });
     this.scene.add(this.transformControl);
     this.transformControl.addEventListener('objectChange', () => {
