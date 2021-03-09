@@ -1,22 +1,25 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
-import { QubusSimpleComponent } from './components/qubusSimple/qubusSimple.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
-import { FooterComponent } from './components/footer/footer.component';
-import { AppRoutingModule } from './app-routing.module';
-import { WindmillComponent } from './components/windmill/windmill.component';
-import { AnimationComponent } from './components/animation/animation.component';
-import { FirstpersonComponent } from './components/firstperson/firstperson.component';
-import { ArImageComponent } from './components/ar-image-scan/ar-image-scan.component';
-import { ArMarkerComponent } from './components/ar-marker/ar-marker.component';
-import { ArLocationComponent } from './components/ar-location/ar-location.component';
-import { VirtualRealityComponent } from './components/virtual-reality/virtual-reality.component';
-import { ParticlesComponent } from './components/particles/particles.component';
-import { WaterfountainComponent } from './components/waterfountain/waterfountain.component';
-import { Waterfountain2Component } from './components/waterfountain2/waterfountain2.component';
-import { ScreenRecorderComponent } from './components/sceen-recorder/screen-recorder.component';
-import { SplineEditorComponent } from './components/spline-editor/spline-editor.component';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {AppComponent} from './app.component';
+import {QubusSimpleComponent} from './components/qubusSimple/qubusSimple.component';
+import {NavbarComponent} from './components/navbar/navbar.component';
+import {FooterComponent} from './components/footer/footer.component';
+import {AppRoutingModule} from './app-routing.module';
+import {WindmillComponent} from './components/windmill/windmill.component';
+import {AnimationComponent} from './components/animation/animation.component';
+import {FirstpersonComponent} from './components/firstperson/firstperson.component';
+import {ArImageComponent} from './components/ar-image-scan/ar-image-scan.component';
+import {ArMarkerComponent} from './components/ar-marker/ar-marker.component';
+import {ArLocationComponent} from './components/ar-location/ar-location.component';
+import {VirtualRealityComponent} from './components/virtual-reality/virtual-reality.component';
+import {ParticlesComponent} from './components/particles/particles.component';
+import {WaterfountainComponent} from './components/waterfountain/waterfountain.component';
+import {Waterfountain2Component} from './components/waterfountain2/waterfountain2.component';
+import {ScreenRecorderComponent} from './components/sceen-recorder/screen-recorder.component';
+import {SplineEditorComponent} from './components/spline-editor/spline-editor.component';
+import {PathFollowComponent} from './components/path-follow/path-follow.component';
+import {TestFileComponent} from './components/test-file/test-file.component';
+import {HttpClientModule} from '@angular/common/http';
 
 
 @NgModule({
@@ -38,11 +41,14 @@ import { SplineEditorComponent } from './components/spline-editor/spline-editor.
     Waterfountain2Component,
     ScreenRecorderComponent,
     SplineEditorComponent,
-
+    PathFollowComponent,
+    TestFileComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+
   ],
   providers: [],
   bootstrap: [
