@@ -6,8 +6,6 @@ import {TransformControls} from 'three/examples/jsm/controls/TransformControls.j
 import {HttpClient} from '@angular/common/http';
 import {SplineService} from '../../services/spline/spline.service';
 import {Spline} from '../../models/spline/spline.model';
-import {Observer, Subscribable} from 'rxjs';
-import {element} from 'protractor';
 import {Point} from '../../models/point/point.model';
 
 
@@ -81,11 +79,6 @@ export class SplineEditorComponent implements OnInit {
     this.arrowHelper.position.y = p1.y;
     this.arrowHelper.position.z = p1.z;
 
-    // this.camera.rotation.x = p2.x;
-    // this.camera.rotation.y = p2.y;
-    // this.camera.rotation.z = p2.z;
-
-
     // tslint:disable-next-line:max-line-length
     this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength())) / this.ARC_SEGMENTS));
   }
@@ -127,6 +120,8 @@ export class SplineEditorComponent implements OnInit {
           break;
         case 'KeyD':
           this.removePoint(true);
+          this.camPosIndex = 0;
+          this.splineIndex = 0;
           break;
         case 'KeyP':
           this.transformControl.detach();
