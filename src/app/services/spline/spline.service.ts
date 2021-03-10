@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {Spline} from '../../models/spline/spline.model';
-import {HttpClient} from '@angular/common/http';
-import {catchError, map} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Spline } from '../../models/spline/spline.model';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +23,7 @@ export class SplineService {
   }
 
   async editSpline(id: string, spline: Spline) {
+    console.log(spline);
     return this.httpClient.put<Spline>(this.baseURL + 'Spline/' + id, spline);
   }
 

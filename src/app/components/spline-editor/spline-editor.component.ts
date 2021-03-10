@@ -30,7 +30,7 @@ export class SplineEditorComponent implements OnInit {
   onUpPosition = new THREE.Vector2();
   onDownPosition = new THREE.Vector2();
   canvas: HTMLCanvasElement;
-  geometry = new THREE.SphereGeometry(1, 1, 1);
+  geometry = new THREE.SphereGeometry(10, 10, 10);
   transformControl: TransformControls;
   ARC_SEGMENTS = 1000;
   splines: CubicBezierCurve3[] = [];
@@ -63,18 +63,18 @@ export class SplineEditorComponent implements OnInit {
     if (this.splines.length === 0) {
       return;
     }
-    const additionNumber = (3000 / this.splines[this.splineIndex].getLength());
-    this.camPosIndex = this.camPosIndex + additionNumber;
+    const speed = 1.1;
+    const additionNumber = (speed * this.ARC_SEGMENTS) / this.splines[this.splineIndex].getLength();
+
+    this.camPosIndex += additionNumber;
     if (this.camPosIndex >= this.ARC_SEGMENTS) {
       if (this.splineIndex !== this.splines.length - 1) {
         this.splineIndex++;
       } else {
         this.splineIndex = 0;
       }
-    }
-    if (this.camPosIndex > this.ARC_SEGMENTS) {
       this.camPosIndex = 0;
-      this.camPosIndex = this.camPosIndex + additionNumber;
+      this.camPosIndex += additionNumber;
     }
     const p1 = this.splines[this.splineIndex].getPointAt(this.camPosIndex / this.ARC_SEGMENTS);
     const p2 = this.splines[this.splineIndex].getTangentAt((this.camPosIndex / this.ARC_SEGMENTS));
@@ -84,7 +84,7 @@ export class SplineEditorComponent implements OnInit {
     this.arrowHelper.position.z = p1.z;
 
     // tslint:disable-next-line:max-line-length
-    this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + additionNumber) / this.ARC_SEGMENTS));
+    this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + (speed * this.ARC_SEGMENTS) / this.splines[this.splineIndex].getLength()) / this.ARC_SEGMENTS));
   }
 
   async ngOnInit(): Promise<void> {
@@ -95,8 +95,9 @@ export class SplineEditorComponent implements OnInit {
   }
 
   async getSpline() {
-    this.splineObserver = await this.splineService.getSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6').subscribe((spline: Spline) => {
+    this.splineObserver = await this.splineService.getSpline('dcd22b81-0732-4e94-ba5e-1a9f9a42dba6').subscribe((spline: Spline) => {
       this.apiSpline = spline;
+      console.log(spline);
       // tslint:disable-next-line:no-shadowed-variable
       this.apiSpline.points.forEach((element: Point) => {
         this.addPoint(new THREE.Vector3(element.x, element.y, element.z));
@@ -105,8 +106,14 @@ export class SplineEditorComponent implements OnInit {
   }
 
   async updateSpline() {
-    this.apiSpline.points[0].x = 100;
-    this.splineUpdateObserver = await this.splineService.editSpline('3fa85f64-5717-4562-b3fc-2c963f66afa6', this.apiSpline).then(e => {
+    this.positions.forEach(element => {
+      console.log(element);
+    });
+    this.apiSpline.points[0].x = -400;
+    this.apiSpline.points[0].y = -1200;
+    this.apiSpline.points[0].z = -1200;
+
+    this.splineUpdateObserver = await this.splineService.editSpline('dcd22b81-0732-4e94-ba5e-1a9f9a42dba6', this.apiSpline).then(e => {
     });
   }
 
@@ -138,6 +145,9 @@ export class SplineEditorComponent implements OnInit {
             this.controls.enabled = !this.controls.enabled;
             this.canMove = !this.canMove;
           }
+          break;
+        case 'KeyJ':
+          this.updateSpline();
           break;
         case 'KeyM':
           for (let k = 0; k < this.splines.length; k++) {
@@ -197,8 +207,8 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(mesh);
   }
 
-// add point to the filed
-  addPoint(position ?: Vector3) {
+  // add point to the filed
+  addPoint(position?: Vector3) {
     const obj = this.addSplineObject(position).position;
     this.positions.push(obj);
     this.addBezierCurveLine();
@@ -272,8 +282,8 @@ export class SplineEditorComponent implements OnInit {
     }
   }
 
-// remove point from the field
-  removePoint(remove ?: boolean) {
+  // remove point from the field
+  removePoint(remove?: boolean) {
     if (remove) {
       this.removeBezierCurveLine();
     }
@@ -286,7 +296,7 @@ export class SplineEditorComponent implements OnInit {
     this.updateSplineOutline();
   }
 
-// update the line drawing
+  // update the line drawing
   updateSplineOutline() {
     for (let k = 0; k < this.splines.length; k++) {
       const spline = this.splines[k];
@@ -320,7 +330,7 @@ export class SplineEditorComponent implements OnInit {
     this.render();
   }
 
-// animate the
+  // animate the
   animate() {
     requestAnimationFrame(() => this.animate());
     this.render();
@@ -331,12 +341,12 @@ export class SplineEditorComponent implements OnInit {
     // this.moveCamera();
   }
 
-// render the view
+  // render the view
   render() {
     this.renderer.render(this.scene, this.camera);
   }
 
-// when clicking on the point
+  // when clicking on the point
   onPointerDown(event: MouseEvent) {
     this.onDownPosition.x = event.clientX;
     this.onDownPosition.y = event.clientY;
@@ -352,8 +362,8 @@ export class SplineEditorComponent implements OnInit {
     }
   }
 
-// add new bullt point
-  addSplineObject(position ?: Vector3, objectType ?: string) {
+  // add new bullt point
+  addSplineObject(position?: Vector3, objectType?: string) {
     const material = new THREE.MeshLambertMaterial({color: 0x000000});
     const object = new THREE.Mesh(this.geometry, material);
     object.type = objectType;
@@ -384,7 +394,7 @@ export class SplineEditorComponent implements OnInit {
     this.scene.add(light);
   }
 
-// init the whole project
+  // init the whole project
   async init() {
     this.container = document.getElementById('container');
     this.scene = new THREE.Scene();
