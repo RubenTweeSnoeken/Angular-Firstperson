@@ -63,7 +63,7 @@ export class SplineEditorComponent implements OnInit {
     if (this.splines.length === 0) {
       return;
     }
-    const additionNumber = (1000 / this.splines[this.splineIndex].getLength());
+    const additionNumber = (3000 / this.splines[this.splineIndex].getLength());
     this.camPosIndex = this.camPosIndex + additionNumber;
     if (this.camPosIndex >= this.ARC_SEGMENTS) {
       if (this.splineIndex !== this.splines.length - 1) {
@@ -74,7 +74,7 @@ export class SplineEditorComponent implements OnInit {
     }
     if (this.camPosIndex > this.ARC_SEGMENTS) {
       this.camPosIndex = 0;
-      this.camPosIndex = this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength());
+      this.camPosIndex = this.camPosIndex + additionNumber;
     }
     const p1 = this.splines[this.splineIndex].getPointAt(this.camPosIndex / this.ARC_SEGMENTS);
     const p2 = this.splines[this.splineIndex].getTangentAt((this.camPosIndex / this.ARC_SEGMENTS));
@@ -149,6 +149,16 @@ export class SplineEditorComponent implements OnInit {
     };
     document.addEventListener('pointermove', (event) => this.onPointerMove(event));
     document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', () => this.onWindowResize());
+  }
+
+  onWindowResize() {
+    console.log('resize');
+    // @ts-ignore
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    // @ts-ignore
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   onPointerMove(event: MouseEvent) {
