@@ -60,7 +60,11 @@ export class SplineEditorComponent implements OnInit {
   }
 
   moveCamera() {
-    this.camPosIndex = this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength());
+    if (this.splines.length === 0) {
+      return;
+    }
+    const additionNumber = (1000 / this.splines[this.splineIndex].getLength());
+    this.camPosIndex = this.camPosIndex + additionNumber;
     if (this.camPosIndex >= this.ARC_SEGMENTS) {
       if (this.splineIndex !== this.splines.length - 1) {
         this.splineIndex++;
@@ -80,7 +84,7 @@ export class SplineEditorComponent implements OnInit {
     this.arrowHelper.position.z = p1.z;
 
     // tslint:disable-next-line:max-line-length
-    this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + (1000 / this.splines[this.splineIndex].getLength())) / this.ARC_SEGMENTS));
+    this.arrowHelper.lookAt(this.splines[this.splineIndex].getPoint((this.camPosIndex + additionNumber) / this.ARC_SEGMENTS));
   }
 
   async ngOnInit(): Promise<void> {
@@ -130,8 +134,10 @@ export class SplineEditorComponent implements OnInit {
           this.locked = !this.locked;
           break;
         case 'KeyI':
-          this.controls.enabled = !this.controls.enabled;
-          this.canMove = !this.canMove;
+          if (this.splines.length >= 1) {
+            this.controls.enabled = !this.controls.enabled;
+            this.canMove = !this.canMove;
+          }
           break;
         case 'KeyM':
           for (let k = 0; k < this.splines.length; k++) {
