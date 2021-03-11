@@ -60,21 +60,25 @@ export class SplineEditorComponent implements OnInit {
   }
 
   moveCamera() {
-    if (this.splines.length === 0) {
-      return;
+    if (this.splines) {
+      if (this.splines.length === 0) {
+        return;
+      }
     }
     const speed = 1.1;
     const additionNumber = (speed * this.ARC_SEGMENTS) / this.splines[this.splineIndex].getLength();
 
     this.camPosIndex += additionNumber;
     if (this.camPosIndex >= this.ARC_SEGMENTS) {
+      let amountOfSegments = 0;
       if (this.splineIndex !== this.splines.length - 1) {
+        const leftOvers = this.camPosIndex - this.ARC_SEGMENTS;
+        amountOfSegments = (leftOvers / this.splines[this.splineIndex + 1].getLength()) * this.ARC_SEGMENTS;
         this.splineIndex++;
       } else {
         this.splineIndex = 0;
       }
-      this.camPosIndex = 0;
-      this.camPosIndex += additionNumber;
+      this.camPosIndex = amountOfSegments;
     }
     const p1 = this.splines[this.splineIndex].getPointAt(this.camPosIndex / this.ARC_SEGMENTS);
     const p2 = this.splines[this.splineIndex].getTangentAt((this.camPosIndex / this.ARC_SEGMENTS));
@@ -147,9 +151,10 @@ export class SplineEditorComponent implements OnInit {
           }
           break;
         case 'KeyJ':
-          this.updateSpline();
+          // this.updateSpline();
           break;
         case 'KeyM':
+          // tslint:disable-next-line:prefer-for-of
           for (let k = 0; k < this.splines.length; k++) {
             console.log(this.splines[k].getLength());
           }
